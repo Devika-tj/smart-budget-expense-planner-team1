@@ -1,11 +1,8 @@
-import React from 'react'
+import React from "react";
+import AdminDashboard from "./pages/AdminDashboard";
 
-const App = () => {
-  return (
-    <div>
-      
-    </div>
-  )
+function App() {
+  return <AdminDashboard />;
 }
 
-export default App
+export default App;
