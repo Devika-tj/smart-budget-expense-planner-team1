@@ -1,4 +1,6 @@
 import * as React from 'react';
+import Navbar from './Navbar';
+import Footer from './Footer'
 import {
   AppBar,
   Toolbar,
@@ -44,6 +46,7 @@ const Home = () => {
 
   return (
     <div>
+      <Navbar/>
       {/* Hero Section */}
       <Container
         maxWidth="lg"
@@ -332,6 +335,7 @@ const Home = () => {
       </Container>
 
       <AuthDialog open={openAuth} handleClose={handleClose} mode={authMode} setAuthMode={setAuthMode} />
+       <Footer/>
     </div>
   );
 };

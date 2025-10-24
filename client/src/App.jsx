@@ -1,21 +1,29 @@
-import React from 'react'
+import React from "react";
 import './App.css'
-import Navbar from './pages/Navbar'
+import ExpenseDetails from "./pages/ExpenseDetails";
+import AdminDashboard from "./pages/AdminDashboard";
+import IncomePage from "./pages/IncomeDetails"
+import Sidebar from "./components/Sidebar";
 import Home from './pages/Home'
-import Footer from './pages/Footer'
 import { Route, Routes } from 'react-router-dom'
 
 
-const App = () => {
+function App() {
   return (
     <div>
-      <Navbar/>
+       
      <Routes>
         <Route path='/' element={<Home/>}></Route>
+        <Route path='/sidebar' element={<Sidebar/>}></Route>
+        <Route path='/admindash' element={<AdminDashboard/>}></Route>
+        <Route path='/expense' element={<ExpenseDetails/>}></Route>
+        <Route path='/income' element={<IncomePage/>}></Route>
       </Routes>
-      <Footer/>
+     
     </div>
-  )
-}
+  );
 
-export default App
+
+}
+export default App;
+
