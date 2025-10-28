@@ -1,10 +1,19 @@
 const express=require("express")
 const cors=require("cors")
 const path=require("path")
-required("dotenv").config()
+require("dotenv").config()
+
+
+const connectDB = require("./config/db.js");
+
+const expenseRoutes=require("./routes/ExpenseRoutes.js")
+
+connectDB();
+
 
 const app=express()
 
+//Middleware to Handle CORS
 app.use(
     cors({
         origin:process.env.CLIENT_URL || "*",
@@ -14,6 +23,8 @@ app.use(
 )
 
 app.use(express.json())
+
+app.use('/api/expense',expenseRoutes)
 
 const PORT= process.env.PORT || 8000
 app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
