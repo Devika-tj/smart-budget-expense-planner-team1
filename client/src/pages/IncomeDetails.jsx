@@ -77,13 +77,13 @@ const IncomePage = () => {
 
         <Stack direction="row" alignItems="center" spacing={3}>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="body2">Inactive</Typography>
+            <Typography variant="body2"></Typography>
             <Switch
               checked={active}
               onChange={() => setActive(!active)}
               color="primary"
             />
-            <Typography variant="body2">Active</Typography>
+            <Typography variant="body2">Edit / Delete</Typography>
           </Stack>
 
           <Button
