@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, DollarSign, Settings } from "lucide-react";
+import { Home, DollarSign, Settings, Receipt, LogOutIcon } from "lucide-react";
 import {
   Box,
   Avatar,
@@ -8,15 +8,26 @@ import {
   Stack,
   Paper,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 
 const Sidebar = () => {
   const [active, setActive] = useState("Dashboard");
+   const navigate = useNavigate();
+
+
+    const handleLogout = () => {
+    // localStorage.removeItem("token"); 
+    // localStorage.removeItem("role"); 
+    navigate("/"); 
+  };
 
   const menuItems = [
-    { name: "Dashboard", icon: <Home size={18} /> },
-    { name: "Income", icon: <DollarSign size={18} /> },
-     { name: "Expense", icon: <DollarSign size={18} /> },
-    { name: "Settings", icon: <Settings size={18} /> },
+    { name: "Dashboard", icon: <Home size={18} />, path: "/admindash"  },
+    { name: "Income", icon: <DollarSign size={18} />, path: "/income"  },
+     { name: "Expense", icon: <Receipt size={18} />, path: "/expense"  },
+    { name: "Settings", icon: <Settings size={18} />, path: "/settings"  },
+    { name: "LogOut", icon: <LogOutIcon size={18}  /> },
   ];
 
   return (
@@ -52,7 +63,14 @@ const Sidebar = () => {
         {menuItems.map((item) => (
           <Button
             key={item.name}
-            onClick={() => setActive(item.name)}
+             onClick={() => {
+              setActive(item.name);
+              if (item.name === "LogOut") {
+                handleLogout(); 
+              } else {
+                navigate(item.path);
+              }
+            }}
             startIcon={item.icon}
             fullWidth
             sx={{

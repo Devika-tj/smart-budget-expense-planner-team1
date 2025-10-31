@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
   const isLogin = mode === "login";
@@ -19,8 +21,64 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
   const isForgot = mode === "forgot";
   const isReset = mode === "reset";
 
+  const navigate = useNavigate();
+
+  
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSwitchMode = () => {
     setAuthMode(isLogin ? "signup" : "login");
+  };
+
+  
+  const handleSubmit = async () => {
+    try {
+      if (isLogin) {
+        // ---- LOGIN ----
+        const res = await axios.post("http://localhost:8000/user/login", {
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (res.status === 200) {
+          alert("Login successful!");
+          navigate("/admindash");
+          handleClose();
+        }
+      } else if (isSignup) {
+        // ---- SIGNUP ----
+        const res = await axios.post("http://localhost:8000/user/signup", {
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          role: "user",
+        });
+
+        if (res.status === 201) {
+          alert("Signup successful! Please login.");
+          setAuthMode("login");
+        }
+      } else if (isForgot) {
+        alert("Password reset link sent to your email.");
+        setAuthMode("reset");
+      } else if (isReset) {
+        alert("Password reset successful!");
+        setAuthMode("login");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Something went wrong!");
+    }
   };
 
   return (
@@ -77,7 +135,6 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
           alignItems: "center",
         }}
       >
-        {/* ---------------- LOGIN / SIGNUP ---------------- */}
         {(isLogin || isSignup) && (
           <>
             {!isLogin && (
@@ -92,29 +149,34 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
                 />
                 <TextField
                   label="Full Name"
+                  name="fullName"
                   type="text"
                   size="small"
                   margin="normal"
                   sx={{ width: "17rem" }}
+                  onChange={handleChange}
                 />
               </>
             )}
             <TextField
               label="Email"
+              name="email"
               type="email"
               size="small"
               margin="normal"
               sx={{ width: "17rem" }}
+              onChange={handleChange}
             />
             <TextField
               label="Password"
+              name="password"
               type="password"
               size="small"
               margin="normal"
               sx={{ width: "17rem" }}
+              onChange={handleChange}
             />
 
-            {/* Forgot Password link inside Login */}
             {isLogin && (
               <Typography
                 variant="body2"
@@ -135,10 +197,12 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
             {!isLogin && (
               <TextField
                 label="Confirm Password"
+                name="confirmPassword"
                 type="password"
                 size="small"
                 margin="normal"
                 sx={{ width: "17rem" }}
+                onChange={handleChange}
               />
             )}
 
@@ -161,7 +225,6 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
               Continue with Google
             </Button>
 
-            {/* Switch Between Login and Signup */}
             <Typography
               variant="body2"
               sx={{
@@ -206,7 +269,6 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
           </>
         )}
 
-        {/* ---------------- FORGOT PASSWORD ---------------- */}
         {isForgot && (
           <>
             <Typography
@@ -217,13 +279,14 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
             </Typography>
             <TextField
               label="Email"
+              name="email"
               type="email"
               size="small"
               margin="normal"
               sx={{ width: "17rem" }}
+              onChange={handleChange}
             />
 
-            {/* Back to Login link */}
             <Typography
               variant="body2"
               sx={{
@@ -239,7 +302,6 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
           </>
         )}
 
-        {/* ---------------- RESET PASSWORD ---------------- */}
         {isReset && (
           <>
             <Typography
@@ -250,20 +312,23 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
             </Typography>
             <TextField
               label="New Password"
+              name="password"
               type="password"
               size="small"
               margin="normal"
               sx={{ width: "17rem" }}
+              onChange={handleChange}
             />
             <TextField
               label="Confirm Password"
+              name="confirmPassword"
               type="password"
               size="small"
               margin="normal"
               sx={{ width: "17rem" }}
+              onChange={handleChange}
             />
 
-            {/* Back to Login link */}
             <Typography
               variant="body2"
               sx={{
@@ -300,10 +365,7 @@ const AuthDialog = ({ open, handleClose, mode, setAuthMode }) => {
             boxShadow: "0 5px 15px rgba(4,32,109,0.3)",
             "&:hover": { backgroundColor: "#062989ff" },
           }}
-          onClick={() => {
-            if (isForgot) setAuthMode("reset");
-            else if (isReset) setAuthMode("login");
-          }}
+          onClick={handleSubmit}
         >
           {isLogin
             ? "Login"

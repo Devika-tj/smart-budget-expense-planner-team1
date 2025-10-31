@@ -41,7 +41,7 @@ router.post('/login',async(req,res)=>{
             res.status(404).send("User not found")
         }
         if(user.password===req.body.password){
-            res.status(200).send({message:'Login Successfully!'})
+            res.status(200).send({message:'Login Successfully!',user})
         }else{
             res.status(401).send({message:'Invalid Credentials'})
         }
