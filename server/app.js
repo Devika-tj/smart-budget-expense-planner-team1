@@ -1,20 +1,20 @@
 const express=require("express")
-const cors=require("cors")
-const path=require("path")
-required("dotenv").config()
-
 const app=express()
+require("dotenv").config()
+const PORT= process.env.PORT || 8000
+const cors=require("cors")
 
-app.use(
-    cors({
-        origin:process.env.CLIENT_URL || "*",
-        methods:["GET","POST","PUT","DELETE"],
-        allowedHeaders:["Content-type","Authorization"]
-    })
-)
+
+const userModel=require('./models/User')
+const userRoute=require('./routes/authRoutes')
+const connectDB=require('./config/db')
+
+connectDB();
 
 app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+app.use('/user',userRoute)
 
-const PORT= process.env.PORT || 8000
+
 app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
 
