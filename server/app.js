@@ -1,7 +1,13 @@
 const express=require("express")
 const cors=require("cors")
 const path=require("path")
-required("dotenv").config()
+require("dotenv").config()
+
+
+const connectDB = require("./config/db.js");
+
+connectDB();
+
 
 const app=express()
 
@@ -12,8 +18,11 @@ app.use(
         allowedHeaders:["Content-type","Authorization"]
     })
 )
-
 app.use(express.json())
+
+const incomeroute=require("./routes/IncomeRoutes.js")
+app.use("/income",incomeroute)
+
 
 const PORT= process.env.PORT || 8000
 app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
