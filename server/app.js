@@ -1,29 +1,78 @@
-const express=require("express")
-const cors=require("cors")
-const path=require("path")
-require("dotenv").config()
+// const express = require("express");
+// const app = express();
+// const PORT= process.env.PORT || 8000
+// require("dotenv").config();
+// const cors = require("cors");
+// const connectDB = require("./config/db");
+// const passport=require("./config/Passport")
+
+// const userRoute = require("./routes/authRoutes");
+// const forgetPassword = require("./routes/forgetPassword");
+// const budgetRoutes = require("./routes/Budgetroutes");
+// const aiRoutes = require("./routes/airoutes");
+// const expenseRoutes=require("./routes/ExpenseRoutes")
+
+// const IncomeRoutes= require("./routes/IncomeRoutes")
+// connectDB();
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// app.use("/api/income", IncomeRoutes);
+
+// app.use(
+//     cors({
+//         origin:process.env.CLIENT_URL || "*",
+//         methods:["GET","POST","PUT","DELETE"],
+//         allowedHeaders:["Content-type","Authorization"]
+//     })
+// )
 
 
-const connectDB = require("./config/db.js");
 
+
+// app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
+
+// server.js
+const express = require("express");
+const app = express();
+const dotenv = require("dotenv");
+const cors = require("cors");
+const connectDB = require("./config/db");
+
+dotenv.config();
+const PORT = process.env.PORT || 8000;
+
+// Connect to MongoDB
 connectDB();
 
-
-const app=express()
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(
-    cors({
-        origin:process.env.CLIENT_URL || "*",
-        methods:["GET","POST","PUT","DELETE"],
-        allowedHeaders:["Content-type","Authorization"]
-    })
-)
-app.use(express.json())
+  cors({
+    origin: process.env.CLIENT_URL || "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-const incomeroute=require("./routes/IncomeRoutes.js")
-app.use("/income",incomeroute)
+// Import Routes
+const userRoute = require("./routes/authRoutes");
+const forgetPassword = require("./routes/forgetPassword");
+const budgetRoutes = require("./routes/Budgetroutes");
+const aiRoutes = require("./routes/airoutes");
+const expenseRoutes = require("./routes/ExpenseRoutes");
+const incomeRoutes = require("./routes/IncomeRoutes");
 
+// Use Routes
+app.use("/api/users", userRoute);
+app.use("/api/forgot-password", forgetPassword);
+app.use("/api/budget", budgetRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/expenses", expenseRoutes);
+app.use("/api/income", incomeRoutes);
 
-const PORT= process.env.PORT || 8000
-app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
-
+// Start server
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

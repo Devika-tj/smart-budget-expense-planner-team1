@@ -5,6 +5,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import IncomePage from "./pages/IncomeDetails"
 import Sidebar from "./components/Sidebar";
 import DashBoardLayout from "./layouts/DashBoardLayout";
+import AuthSuccess from "./pages/Authsuccess"
+import UserDashboard from "./pages/UserDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from './pages/Home'
 import { Route, Routes } from 'react-router-dom'
 
@@ -19,16 +22,21 @@ const App = ()=>{
       <Routes>
         <Route path='/' element={<Home />}></Route>
         <Route path='/sidebar' element={<Sidebar />}></Route>
+        <Route path='/auth-success' element={<AuthSuccess />}></Route>
+
 
         {/* With Sidebar */}
         <Route
           path="/admindash"
           element={
-            <DashBoardLayout>
-              <AdminDashboard />
-            </DashBoardLayout>
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <DashBoardLayout>
+                <AdminDashboard />
+              </DashBoardLayout>
+            </ProtectedRoute>
           }
         />
+        <Route path="/userdashboard" element={<DashBoardLayout><UserDashboard /></DashBoardLayout>} />
         <Route
           path="/expense"
           element={
@@ -54,4 +62,3 @@ const App = ()=>{
 
 }
 export default App;
-
