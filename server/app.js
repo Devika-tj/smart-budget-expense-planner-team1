@@ -40,7 +40,12 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
-dotenv.config();
+const userRoute = require("./routes/authRoutes");
+const forgetPassword = require("./routes/forgetPassword");
+const budgetRoutes = require("./routes/Budgetroutes");
+const aiRoutes = require("./routes/airoutes");
+const expenseRoutes=require("./routes/ExpenseRoutes")
+
 const PORT = process.env.PORT || 8000;
 
 // Connect to MongoDB
