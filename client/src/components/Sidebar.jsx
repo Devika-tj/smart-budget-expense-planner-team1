@@ -1,27 +1,55 @@
-import React, { useState } from "react";
-import { Home, DollarSign, Settings, Receipt } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Home,
+  DollarSign,
+  Settings,
+  Receipt,
+  LogOut as LogOutIcon,
+} from "lucide-react";
 import {
   Box,
   Avatar,
   Typography,
   Button,
   Stack,
-  Paper,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 const Sidebar = () => {
   const [active, setActive] = useState("Dashboard");
-   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
+ 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
-  const menuItems = [
-    { name: "Dashboard", icon: <Home size={18} /> },
-    { name: "Income", icon: <DollarSign size={18} /> },
-     { name: "Expense", icon: <Receipt size={18} /> },
-    { name: "Settings", icon: <Settings size={18} /> },
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
+  // Menu items — admin-only for Admin Dashboard
+  const allMenuItems = [
+    { name: "Admin Dashboard", icon: <Home size={18} />, path: "/admindash", role: "admin" },
+    { name: "Dashboard", icon: <DashboardIcon />, path: "/userdashboard" },
+    { name: "Income", icon: <DollarSign size={18} />, path: "/income" },
+    { name: "Expense", icon: <Receipt size={18} />, path: "/expense" },
+    { name: "Settings", icon: <Settings size={18} />, path: "/settings" },
+    { name: "LogOut", icon: <LogOutIcon size={18} /> },
   ];
+
+  // Filter items based on role
+  const menuItems =
+    user?.role === "admin"
+      ? allMenuItems
+      : allMenuItems.filter((item) => item.role !== "admin");
 
   return (
     <Box
@@ -39,15 +67,25 @@ const Sidebar = () => {
         borderBottomRightRadius: 24,
       }}
     >
-      {/* Profile Section */}
+   
       <Stack spacing={1} alignItems="center" mb={5}>
         <Avatar
-          src="https://via.placeholder.com/60"
-          alt="Profile"
-          sx={{ width: 64, height: 64, border: "2px solid #ccc" }}
-        />
-        <Typography variant="body2" fontWeight={500}>
-          John Doe
+          sx={{
+            width: 64,
+            height: 64,
+            bgcolor: "#fff",
+            color: "#04206dff",
+            fontWeight: "bold",
+            border: "2px solid #ccc",
+          }}
+        >
+          {user?.fullName ? user.fullName.charAt(0).toUpperCase() : "U"}
+        </Avatar>
+        <Typography variant="body2" fontWeight={600}>
+          {user?.fullName || "Guest User"}
+        </Typography>
+        <Typography variant="caption" sx={{ color: "#d0d0ff" }}>
+          {user?.role ? user.role.toUpperCase() : "GUEST"}
         </Typography>
       </Stack>
 
@@ -56,9 +94,10 @@ const Sidebar = () => {
         {menuItems.map((item) => (
           <Button
             key={item.name}
-             onClick={() => {
+            onClick={() => {
               setActive(item.name);
-              navigate(item.path);
+              if (item.name === "LogOut") handleLogout();
+              else navigate(item.path);
             }}
             startIcon={item.icon}
             fullWidth

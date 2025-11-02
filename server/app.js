@@ -1,31 +1,39 @@
-const express=require("express")
-const cors=require("cors")
-const path=require("path")
-require("dotenv").config()
+const express = require("express");
+const app = express();
+require("dotenv").config();
+const cors = require("cors");
+const connectDB = require("./config/db");
 
+const userRoute = require("./routes/authRoutes");
+const forgetPassword = require("./routes/forgetPassword");
+const budgetRoutes = require("./routes/Budgetroutes");
+const aiRoutes = require("./routes/airoutes");
+const expenseRoutes=require("./routes/ExpenseRoutes")
 
-const connectDB = require("./config/db.js");
+const PORT = process.env.PORT || 8000;
 
-const expenseRoutes=require("./routes/ExpenseRoutes.js")
 
 connectDB();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const app=express()
 
-//Middleware to Handle CORS
 app.use(
-    cors({
-        origin:process.env.CLIENT_URL || "*",
-        methods:["GET","POST","PUT","DELETE"],
-        allowedHeaders:["Content-type","Authorization"]
-    })
-)
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
-app.use(express.json())
 
-app.use('/api/expense',expenseRoutes)
+app.use("/auth", userRoute);
+app.use("/api/auth", forgetPassword);
+app.use("/api/budget", budgetRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/expense", expenseRoutes)
 
-const PORT= process.env.PORT || 8000
-app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
 
+console.log("JWT_SECRET:", process.env.JWT_SECRET ? "Loaded " : "Missing ");
+
+app.listen(PORT, () => console.log(` Server running on port ${PORT}`));

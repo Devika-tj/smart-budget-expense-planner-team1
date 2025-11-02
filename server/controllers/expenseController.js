@@ -1,6 +1,9 @@
 const xlsx = require("xlsx");
 const Expense = require("../models/Expense");
 const Budget = require("../models/Budget"); 
+const fs = require("fs");
+const { createObjectCsvWriter } = require("csv-writer");
+const PDFDocument = require("pdfkit");
 
 //  Add Expense or Income
 exports.addExpense = async (req, res) => {
@@ -110,7 +113,7 @@ exports.getMonthlySummary = async (req, res) => {
       .filter((e) => e.type === "income")
       .reduce((sum, e) => sum + e.amount, 0);
 
-    // Optional: integrate with budget if you have one
+   
     const budget = await Budget.findOne({ userId, month, year });
     const budgetLimit = budget ? budget.limit : 0;
     const progress = budgetLimit ? (totalExpense / budgetLimit) * 100 : 0;
@@ -156,3 +159,65 @@ exports.downloadExpenseExcel = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+exports.downloadExpenseCSV = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const expenses = await Expense.find({ userId }).sort({ date: -1 });
+    const csvPath = `expenses_${userId}.csv`;
+    const csvWriter = createObjectCsvWriter({
+      path: csvPath,
+      header: [
+        { id: "title", title: "Title" },
+        { id: "category", title: "Category" },
+        { id: "amount", title: "Amount" },
+        { id: "type", title: "Type" },
+        { id: "paymentMode", title: "PaymentMode" },
+        { id: "date", title: "Date" },
+      ],
+    });
+
+    const data = expenses.map((e) => ({
+      title: e.title,
+      category: e.category,
+      amount: e.amount,
+      type: e.type,
+      paymentMode: e.paymentMode,
+      date: new Date(e.date).toISOString(),
+    }));
+
+    await csvWriter.writeRecords(data);
+    res.download(csvPath, (err) => {
+      if (!err) fs.unlinkSync(csvPath);
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.downloadExpensePDF = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const expenses = await Expense.find({ userId }).sort({ date: -1 });
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+    res.setHeader("Content-disposition", `attachment; filename=expenses_${userId}.pdf`);
+    res.setHeader("Content-type", "application/pdf");
+
+    doc.pipe(res);
+    doc.fontSize(18).text("Expense Report", { align: "center" });
+    doc.moveDown();
+
+    expenses.forEach((e, idx) => {
+      doc.fontSize(12).text(`${idx + 1}. ${e.title} — ${e.category} — ${e.amount} — ${e.type} — ${new Date(e.date).toLocaleDateString()}`);
+      doc.moveDown(0.2);
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
