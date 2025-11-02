@@ -10,6 +10,9 @@ const budgetRoutes = require("./routes/Budgetroutes");
 const aiRoutes = require("./routes/airoutes");
 const expenseRoutes=require("./routes/ExpenseRoutes")
 
+const createAdmin = require("./utils/admin");
+createAdmin();
+
 const PORT = process.env.PORT || 8000;
 
 
