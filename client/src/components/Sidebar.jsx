@@ -38,9 +38,9 @@ const Sidebar = () => {
   // Menu items — admin-only for Admin Dashboard
   const allMenuItems = [
     { name: "Admin Dashboard", icon: <Home size={18} />, path: "/admindash", role: "admin" },
-    { name: "Dashboard", icon: <DashboardIcon />, path: "/userdashboard" },
-    { name: "Income", icon: <DollarSign size={18} />, path: "/income" },
-    { name: "Expense", icon: <Receipt size={18} />, path: "/expense" },
+    { name: "Dashboard", icon: <DashboardIcon />, path: "/userdashboard", role: "user" },
+    { name: "Income", icon: <DollarSign size={18} />, path: "/income", role: "user" },
+    { name: "Expense", icon: <Receipt size={18} />, path: "/expense", role: "user" },
     { name: "Settings", icon: <Settings size={18} />, path: "/settings" },
     { name: "LogOut", icon: <LogOutIcon size={18} /> },
   ];
@@ -48,7 +48,7 @@ const Sidebar = () => {
   // Filter items based on role
   const menuItems =
     user?.role === "admin"
-      ? allMenuItems
+      ? allMenuItems.filter((item) => item.role !== "user")
       : allMenuItems.filter((item) => item.role !== "admin");
 
   return (
