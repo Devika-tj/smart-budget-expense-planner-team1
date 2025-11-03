@@ -1,37 +1,4 @@
-// const express = require("express");
-// const app = express();
-// const PORT= process.env.PORT || 8000
-// require("dotenv").config();
-// const cors = require("cors");
-// const connectDB = require("./config/db");
-// const passport=require("./config/Passport")
 
-// const userRoute = require("./routes/authRoutes");
-// const forgetPassword = require("./routes/forgetPassword");
-// const budgetRoutes = require("./routes/Budgetroutes");
-// const aiRoutes = require("./routes/airoutes");
-// const expenseRoutes=require("./routes/ExpenseRoutes")
-
-// const IncomeRoutes= require("./routes/IncomeRoutes")
-// connectDB();
-
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-// app.use("/api/income", IncomeRoutes);
-
-// app.use(
-//     cors({
-//         origin:process.env.CLIENT_URL || "*",
-//         methods:["GET","POST","PUT","DELETE"],
-//         allowedHeaders:["Content-type","Authorization"]
-//     })
-// )
-
-
-
-
-// app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
 
 // server.js
 const express = require("express");
@@ -40,11 +7,11 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
-const userRoute = require("./routes/authRoutes");
-const forgetPassword = require("./routes/forgetPassword");
-const budgetRoutes = require("./routes/Budgetroutes");
-const aiRoutes = require("./routes/airoutes");
-const expenseRoutes=require("./routes/ExpenseRoutes")
+// const userRoute = require("./routes/authRoutes");
+// const forgetPassword = require("./routes/forgetPassword");
+// const budgetRoutes = require("./routes/Budgetroutes");
+// const aiRoutes = require("./routes/airoutes");
+// const expenseRoutes=require("./routes/ExpenseRoutes")
 
 const PORT = process.env.PORT || 8000;
 
@@ -72,7 +39,7 @@ const expenseRoutes = require("./routes/ExpenseRoutes");
 const incomeRoutes = require("./routes/IncomeRoutes");
 
 // Use Routes
-app.use("/api/users", userRoute);
+app.use("/auth", userRoute);
 app.use("/api/forgot-password", forgetPassword);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/ai", aiRoutes);
