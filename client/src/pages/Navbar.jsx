@@ -45,6 +45,7 @@ const Navbar = () => {
               sx={{ color: '#fb8f8fff' }}
             >
               <FaPiggyBank />
+              
             </IconButton>
 
             {/* Title */}

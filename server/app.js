@@ -1,6 +1,3 @@
-
-
-// server.js
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
@@ -43,8 +40,11 @@ app.use("/auth", userRoute);
 app.use("/api/forgot-password", forgetPassword);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/ai", aiRoutes);
-app.use("/api/expenses", expenseRoutes);
+app.use("/api/expense", expenseRoutes);
 app.use("/api/income", incomeRoutes);
 
+const CreateAdmin=require("./utils/admin")
+CreateAdmin()
+
 // Start server
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
