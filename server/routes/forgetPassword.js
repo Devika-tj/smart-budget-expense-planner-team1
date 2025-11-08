@@ -6,14 +6,13 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 
 
-// Forgot password
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    // Generate token
+    
     const token = crypto.randomBytes(32).toString("hex");
     user.resetPasswordToken = token;
     user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 min
@@ -46,7 +45,7 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-// Reset password
+
 router.post("/reset-password/:token", async (req, res) => {
   try {
     const { token } = req.params;

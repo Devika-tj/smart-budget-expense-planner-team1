@@ -8,6 +8,7 @@ import DashBoardLayout from "./layouts/DashBoardLayout";
 import AuthSuccess from "./pages/Authsuccess"
 import UserDashboard from "./pages/UserDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import BudgetPage from "./pages/BudgetPage";
 import Home from './pages/Home'
 import { Route, Routes } from 'react-router-dom'
 
@@ -53,6 +54,8 @@ const App = ()=>{
             </DashBoardLayout>
           }
         />
+
+        <Route path="/budget" element={<DashBoardLayout><BudgetPage /></DashBoardLayout>} />
 
       </Routes>
 

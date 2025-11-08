@@ -36,11 +36,12 @@ const IncomePage = () => {
     description: "",
     amount: "",
     category: "",
+    date: new Date().toISOString().split("T")[0],
   });
 
   const token = localStorage.getItem("token");
 
-  // ✅ Fetch incomes
+
   const fetchIncomes = async () => {
     try {
       const res = await axios.get("http://localhost:8000/api/income", {
@@ -56,12 +57,12 @@ const IncomePage = () => {
     fetchIncomes();
   }, []);
 
-  // ✅ Handle form change
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Open dialog for Add or Edit
+
   const handleOpen = (income = null) => {
     if (income) {
       setFormData({
@@ -69,10 +70,11 @@ const IncomePage = () => {
         description: income.description,
         amount: income.amount,
         category: income.category,
+        date: new Date(income.date).toISOString().split("T")[0], // convert stored date
       });
       setEditId(income._id);
     } else {
-      setFormData({ title: "", description: "", amount: "", category: "" });
+      setFormData({ title: "", description: "", amount: "", category: "", date: new Date().toISOString().split("T")[0] });
       setEditId(null);
     }
     setOpen(true);
@@ -80,7 +82,7 @@ const IncomePage = () => {
 
   const handleClose = () => setOpen(false);
 
-  // ✅ Submit form (Create or Update)
+
   const handleSubmit = async () => {
     try {
       if (!formData.title || !formData.amount || !formData.category) {
@@ -107,7 +109,7 @@ const IncomePage = () => {
     }
   };
 
-  // ✅ Delete income
+
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this income?")) {
       try {
@@ -178,7 +180,7 @@ const IncomePage = () => {
         </Table>
       </TableContainer>
 
-      {/* ✅ Dialog for Add/Edit */}
+      
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>{editId ? "Edit Income" : "Add New Income"}</DialogTitle>
         <DialogContent>
@@ -220,6 +222,16 @@ const IncomePage = () => {
                 <MenuItem value="Business">Business</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
+              <br />
+               <TextField
+                  label="Date"
+                  name="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                />
             </FormControl>
           </Stack>
         </DialogContent>

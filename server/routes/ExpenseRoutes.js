@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 const {
   addExpense,
   getAllExpense,
@@ -6,20 +7,26 @@ const {
   downloadExpensePDF,
   downloadExpenseCSV,
   updateExpense,
-  getMonthlySummary
+  getMonthlySummary,
 } = require("../controllers/expenseController");
-const { suggestions: getAISuggestions } = require("../controllers/aicontroller");
+
+const { suggestions, monthlySummaryParagraph } = require("../controllers/aicontroller");
 const { protect } = require("../middleware/authMiddleware");
 
-const router = express.Router();
 
 router.post("/add", protect, addExpense);
 router.get("/get", protect, getAllExpense);
 router.put("/update/:id", protect, updateExpense);
-router.get("/downloadpdf", protect, downloadExpensePDF);
-router.get("/downloadcsv", protect, downloadExpenseCSV);
-router.get("/aisuggestions", protect, getAISuggestions);
-router.get("/summary", protect, getMonthlySummary);
 router.delete("/:id", protect, deleteExpense);
 
-module.exports = router;
+
+router.get("/downloadcsv", protect, downloadExpenseCSV);
+router.get("/downloadpdf", protect, downloadExpensePDF);
+
+
+router.get("/aisuggestions", protect, suggestions);
+router.get("/ai-monthly-summary", protect, monthlySummaryParagraph);
+
+router.get("/summary", protect, getMonthlySummary);
+
+module.exports = router
