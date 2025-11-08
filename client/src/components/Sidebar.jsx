@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Home,
-  DollarSign,
-  Settings,
-  Receipt,
-  LogOut as LogOutIcon,
-} from "lucide-react";
-import {
-  Box,
-  Avatar,
-  Typography,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Home, DollarSign, Receipt, LogOut as LogOutIcon } from "lucide-react";
+import { Box, Avatar, Typography, Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
@@ -20,8 +8,8 @@ const Sidebar = () => {
   const [active, setActive] = useState("Dashboard");
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false); // For toggle
 
- 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -35,93 +23,169 @@ const Sidebar = () => {
     navigate("/");
   };
 
-  // Menu items — admin-only for Admin Dashboard
   const allMenuItems = [
-    { name: "Admin Dashboard", icon: <Home size={18} />, path: "/admindash", role: "admin" },
-    { name: "Dashboard", icon: <DashboardIcon />, path: "/userdashboard", role: "user" },
-    { name: "Income", icon: <DollarSign size={18} />, path: "/income", role: "user" },
-    { name: "Expense", icon: <Receipt size={18} />, path: "/expense", role: "user" },
-    { name: "Settings", icon: <Settings size={18} />, path: "/settings" },
+    {
+      name: "Admin Dashboard",
+      icon: <Home size={18} />,
+      path: "/admindash",
+      role: "admin",
+    },
+    {
+      name: "Dashboard",
+      icon: <DashboardIcon />,
+      path: "/userdashboard",
+      role: "user",
+    },
+    {
+      name: "Income",
+      icon: <DollarSign size={18} />,
+      path: "/income",
+      role: "user",
+    },
+    {
+      name: "Expense",
+      icon: <Receipt size={18} />,
+      path: "/expense",
+      role: "user",
+    },
     { name: "LogOut", icon: <LogOutIcon size={18} /> },
   ];
 
-  // Filter items based on role
   const menuItems =
     user?.role === "admin"
       ? allMenuItems.filter((item) => item.role !== "user")
       : allMenuItems.filter((item) => item.role !== "admin");
 
   return (
-    <Box
-      sx={{
-        width: 240,
-        height: "100vh",
-        background: "linear-gradient(to bottom, #1f1f3a, #0a3d46)",
-        color: "white",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        py: 4,
-        boxShadow: 3,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 24,
-      }}
-    >
-   
-      <Stack spacing={1} alignItems="center" mb={5}>
-        <Avatar
+    <Box sx={{ display: "flex", position: "relative" }}>
+      {/* Toggle Button */}
+      <Button
+        onClick={() => setOpen(true)}
+        sx={{
+          position: "fixed",
+          top: 10,
+          left: 5,
+          zIndex: 3000,
+          display: { xs: "block", md: "none" },
+          background: "#1f1f3a",
+          color: "white",
+          borderRadius: "7px",
+          width: 30,
+          height: 30,
+          fontSize: "15px",
+          fontWeight: "bold",
+          minWidth: "30px",
+          "&:hover": { backgroundColor: "#3c3c6a" },
+        }}
+      >
+        ☰
+      </Button>
+
+      {/* Dark overlay when sidebar open in mobile */}
+      {open && (
+        <Box
+          onClick={() => setOpen(false)}
           sx={{
-            width: 64,
-            height: 64,
-            bgcolor: "#fff",
-            color: "#04206dff",
-            fontWeight: "bold",
-            border: "2px solid #ccc",
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 1400,
+            display: { xs: "block", md: "none" },
+          }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <Box
+        sx={{
+          position: { xs: "fixed", md: "relative" },
+          left: { xs: open ? 0 : "-260px", md: 0 },
+          top: 0,
+          height: "100vh",
+          transition: "0.3s",
+          zIndex: 1500,
+          width: { xs: 210, sm: 200, md: 240 },
+          background:
+            "linear-gradient(135deg, #041249ff 0%, #111111 55%, #0A8A6B 100%)",
+          color: "white",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          py: { xs: 2, sm: 3, md: 4 },
+          boxShadow: 3,
+          borderBottomRightRadius: 24,
+        }}
+      >
+        <Button
+          onClick={() => setOpen(false)}
+          sx={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            display: { xs: "block", md: "none" },
+            color: "white",
+            minWidth: "30px",
+            fontSize: "20px",
           }}
         >
-          {user?.fullName ? user.fullName.charAt(0).toUpperCase() : "U"}
-        </Avatar>
-        <Typography variant="body2" fontWeight={600}>
-          {user?.fullName || "Guest User"}
-        </Typography>
-        <Typography variant="caption" sx={{ color: "#d0d0ff" }}>
-          {user?.role ? user.role.toUpperCase() : "GUEST"}
-        </Typography>
-      </Stack>
+          ✕
+        </Button>
 
-      {/* Navigation */}
-      <Stack spacing={1} width="100%" px={2}>
-        {menuItems.map((item) => (
-          <Button
-            key={item.name}
-            onClick={() => {
-              setActive(item.name);
-              if (item.name === "LogOut") handleLogout();
-              else navigate(item.path);
-            }}
-            startIcon={item.icon}
-            fullWidth
+        <Stack spacing={1} alignItems="center" mb={5}>
+          <Avatar
             sx={{
-              justifyContent: "flex-start",
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: 14,
-              px: 3,
-              py: 1.5,
-              borderRadius: 2,
-              backgroundColor:
-                active === item.name ? "rgba(128,90,213,0.8)" : "transparent",
-              color: active === item.name ? "#fff" : "rgba(255,255,255,0.7)",
-              "&:hover": {
-                backgroundColor: "rgba(128,90,213,0.5)",
-                color: "#fff",
-              },
+              width: 64,
+              height: 64,
+              bgcolor: "#fff",
+              color: "#04206dff",
+              fontWeight: "bold",
+              border: "2px solid #ccc",
             }}
           >
-            {item.name}
-          </Button>
-        ))}
-      </Stack>
+            {user?.fullName ? user.fullName.charAt(0).toUpperCase() : "U"}
+          </Avatar>
+          <Typography variant="body2" fontWeight={600}>
+            {user?.fullName || "Guest User"}
+          </Typography>
+          <Typography variant="caption" sx={{ color: "#d0d0ff" }}>
+            {user?.role ? user.role.toUpperCase() : "GUEST"}
+          </Typography>
+        </Stack>
+
+        <Stack spacing={1} width="100%" px={2}>
+          {menuItems.map((item) => (
+            <Button
+              key={item.name}
+              onClick={() => {
+                setActive(item.name);
+                if (item.name === "LogOut") handleLogout();
+                else navigate(item.path);
+                setOpen(false); // close when selecting on mobile
+              }}
+              startIcon={item.icon}
+              fullWidth
+              sx={{
+                justifyContent: "flex-start",
+                textTransform: "none",
+                fontWeight: 500,
+                fontSize: 14,
+                px: 3,
+                py: 1.5,
+                borderRadius: 2,
+                backgroundColor:
+                  active === item.name ? "rgba(128,90,213,0.8)" : "transparent",
+                color: active === item.name ? "#fff" : "rgba(255,255,255,0.7)",
+                "&:hover": {
+                  backgroundColor: "rgba(128,90,213,0.5)",
+                  color: "#fff",
+                },
+              }}
+            >
+              {item.name}
+            </Button>
+          ))}
+        </Stack>
+      </Box>
     </Box>
   );
 };

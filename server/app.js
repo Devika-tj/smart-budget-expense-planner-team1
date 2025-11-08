@@ -15,6 +15,9 @@ const connectDB = require("./config/db");
 
 const PORT = process.env.PORT || 8000;
 
+const createAdmin=require('./utils/admin')
+createAdmin()
+
 // Connect to MongoDB
 connectDB();
 
@@ -43,7 +46,7 @@ app.use("/auth", userRoute);
 app.use("/api/forgot-password", forgetPassword);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/ai", aiRoutes);
-app.use("/api/expenses", expenseRoutes);
+app.use("/api/expense", expenseRoutes);
 app.use("/api/income", incomeRoutes);
 
 // Start server
