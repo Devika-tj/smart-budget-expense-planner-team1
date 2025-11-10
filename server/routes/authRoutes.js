@@ -106,4 +106,47 @@ router.get("/me", protect, async (req, res) => {
   }
 });
 
+// ------------------ UPDATE USER PROFILE ------------------
+router.put("/update", protect, async (req, res) => {
+  try {
+    const { fullName, currentPassword, newPassword } = req.body;
+    const user = await userModel.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, msg: "User not found" });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, msg: "Current password incorrect" });
+    }
+
+    // Update name
+    if (fullName) user.fullName = fullName;
+
+    // Update password if provided
+    if (newPassword && newPassword.trim() !== "") {
+      const hashed = await bcrypt.hash(newPassword, 10);
+      user.password = hashed;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      msg: "Profile updated successfully",
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ success: false, msg: "Server error" });
+  }
+});
+
+
 module.exports = router;

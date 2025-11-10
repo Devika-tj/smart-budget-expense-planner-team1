@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Home, DollarSign, Receipt, LogOut as LogOutIcon } from "lucide-react";
+import { Home, DollarSign, Receipt, LogOut as LogOutIcon, Settings } from "lucide-react";
 import { Box, Avatar, Typography, Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -46,6 +46,12 @@ const Sidebar = () => {
       name: "Expense",
       icon: <Receipt size={18} />,
       path: "/expense",
+      role: "user",
+    },
+    {
+      name: "Settings",
+      icon: <Settings size={18} />,
+      path: "/settings",
       role: "user",
     },
     { name: "LogOut", icon: <LogOutIcon size={18} /> },
