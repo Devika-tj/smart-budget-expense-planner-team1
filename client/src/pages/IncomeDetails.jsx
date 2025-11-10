@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  Box,
+  Container,
   Typography,
   Button,
   Table,
@@ -23,6 +22,8 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Switch,
+  Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -31,16 +32,17 @@ const IncomePage = () => {
   const [incomes, setIncomes] = useState([]);
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [active, setActive] = useState(false); 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     amount: "",
     category: "",
+    date: new Date().toISOString().split("T")[0],
   });
 
   const token = localStorage.getItem("token");
 
-  // ✅ Fetch incomes
   const fetchIncomes = async () => {
     try {
       const res = await axios.get("http://localhost:8000/api/income", {
@@ -56,12 +58,10 @@ const IncomePage = () => {
     fetchIncomes();
   }, []);
 
-  // ✅ Handle form change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Open dialog for Add or Edit
   const handleOpen = (income = null) => {
     if (income) {
       setFormData({
@@ -69,10 +69,17 @@ const IncomePage = () => {
         description: income.description,
         amount: income.amount,
         category: income.category,
+        date: new Date(income.date).toISOString().split("T")[0],
       });
       setEditId(income._id);
     } else {
-      setFormData({ title: "", description: "", amount: "", category: "" });
+      setFormData({
+        title: "",
+        description: "",
+        amount: "",
+        category: "",
+        date: new Date().toISOString().split("T")[0],
+      });
       setEditId(null);
     }
     setOpen(true);
@@ -80,7 +87,6 @@ const IncomePage = () => {
 
   const handleClose = () => setOpen(false);
 
-  // ✅ Submit form (Create or Update)
   const handleSubmit = async () => {
     try {
       if (!formData.title || !formData.amount || !formData.category) {
@@ -89,11 +95,9 @@ const IncomePage = () => {
       }
 
       if (editId) {
-        await axios.put(
-          `http://localhost:8000/api/income/${editId}`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.put(`http://localhost:8000/api/income/${editId}`, formData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
       } else {
         await axios.post("http://localhost:8000/api/income", formData, {
           headers: { Authorization: `Bearer ${token}` },
@@ -107,7 +111,6 @@ const IncomePage = () => {
     }
   };
 
-  // ✅ Delete income
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this income?")) {
       try {
@@ -122,26 +125,80 @@ const IncomePage = () => {
   };
 
   return (
-    <Box p={3}>
-      <Stack direction="row" justifyContent="space-between" mb={3}>
-        <Typography variant="h5" fontWeight="bold">
-          Income Management
+    <Container
+      maxWidth="lg"
+      sx={{
+        mt: 4,
+        mb: 5,
+        px: { xs: 2, sm: 3, md: 4 },
+      }}
+    >
+      {/* Header */}
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        spacing={2}
+        mb={3}
+      >
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: "bold", fontSize: { xs: "1.6rem", sm: "2rem" } }}
+        >
+          Income Details
         </Typography>
-        <Button variant="contained" color="primary" onClick={() => handleOpen()}>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() => handleOpen()}
+          sx={{ alignSelf: { xs: "flex-start", sm: "center" } }}
+        >
           + Add Income
         </Button>
       </Stack>
 
-      <TableContainer component={Paper}>
+      {/* Toggle Row */}
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+        spacing={1}
+      >
+        <Typography variant="body1" fontWeight="600">
+          Manage Entries
+        </Typography>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Typography variant="body2">Edit / Delete</Typography>
+          <Switch checked={active} onChange={() => setActive(!active)} />
+        </Stack>
+      </Stack>
+
+      {/* Table */}
+      <TableContainer
+        component={Paper}
+        sx={{
+          borderRadius: 2,
+          boxShadow: 1,
+          overflowX: { xs: "auto", md: "visible" },
+          "&::-webkit-scrollbar": {
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#bdbdbd",
+            borderRadius: "10px",
+          },
+        }}
+      >
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: "#f9f9f9" }}>
             <TableRow>
               <TableCell>Title</TableCell>
               <TableCell>Description</TableCell>
-              <TableCell>Amount</TableCell>
+              <TableCell>Amount (₹)</TableCell>
               <TableCell>Category</TableCell>
               <TableCell>Date</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              {active && <TableCell align="center">Actions</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -149,27 +206,36 @@ const IncomePage = () => {
               <TableRow key={income._id}>
                 <TableCell>{income.title}</TableCell>
                 <TableCell>{income.description}</TableCell>
-                <TableCell>₹{income.amount}</TableCell>
+                <TableCell>{income.amount}</TableCell>
                 <TableCell>{income.category}</TableCell>
                 <TableCell>
                   {new Date(income.date).toLocaleDateString("en-IN")}
                 </TableCell>
-                <TableCell align="center">
-                  <IconButton color="primary" onClick={() => handleOpen(income)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(income._id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+                {active && (
+                  <TableCell align="center">
+                    <Stack direction="row" justifyContent="center" spacing={1}>
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        onClick={() => handleOpen(income)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        color="error"
+                        size="small"
+                        onClick={() => handleDelete(income._id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
             {incomes.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={active ? 6 : 5} align="center">
                   No income records found.
                 </TableCell>
               </TableRow>
@@ -178,11 +244,15 @@ const IncomePage = () => {
         </Table>
       </TableContainer>
 
-      {/* ✅ Dialog for Add/Edit */}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>{editId ? "Edit Income" : "Add New Income"}</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} mt={1}>
+      {/* Dialog */}
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
+        <DialogTitle
+          sx={{ textAlign: "center", fontWeight: "bold", fontSize: "1.2rem" }}
+        >
+          {editId ? "Edit Income" : "Add Income"}
+        </DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={2}>
             <TextField
               label="Title"
               name="title"
@@ -213,6 +283,7 @@ const IncomePage = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
+                label="Category"
               >
                 <MenuItem value="Salary">Salary</MenuItem>
                 <MenuItem value="Freelance">Freelance</MenuItem>
@@ -221,17 +292,30 @@ const IncomePage = () => {
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
             </FormControl>
+            <TextField
+              label="Date"
+              name="date"
+              type="date"
+              value={formData.date}
+              onChange={handleChange}
+              fullWidth
+              required
+              InputLabelProps={{ shrink: true }}
+            />
           </Stack>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ justifyContent: "center" }}>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            {editId ? "Update" : "Add"}
+          <Button variant="contained" onClick={handleSubmit}>
+            {editId ? "Update" : "Save"}
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Container>
   );
 };
 
 export default IncomePage;
+
+
+

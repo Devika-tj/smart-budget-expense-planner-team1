@@ -1,9 +1,25 @@
 const xlsx = require("xlsx");
 const Expense = require("../models/Expense");
-const Budget = require("../models/Budget"); 
+const Budget = require("../models/Budget");
 const fs = require("fs");
 const { createObjectCsvWriter } = require("csv-writer");
 const PDFDocument = require("pdfkit");
+
+
+function buildFilter(query, userId) {
+  const filter = { userId };
+  if (query.category) filter.category = query.category;
+  if (query.paymentMode) filter.paymentMode = query.paymentMode;
+  if (query.type) filter.type = query.type;
+
+  if (query.startDate || query.endDate) {
+    filter.date = {};
+    if (query.startDate) filter.date.$gte = new Date(query.startDate);
+    if (query.endDate) filter.date.$lte = new Date(query.endDate);
+  }
+  return filter;
+}
+
 
 //  Add Expense or Income
 exports.addExpense = async (req, res) => {
@@ -42,9 +58,9 @@ exports.addExpense = async (req, res) => {
 //  Get all expenses for a user
 exports.getAllExpense = async (req, res) => {
   const userId = req.user.userId;
-
   try {
-    const expenses = await Expense.find({ userId }).sort({ date: -1 });
+    const filter = buildFilter(req.query, userId);
+    const expenses = await Expense.find(filter).sort({ date: -1 });
     res.status(200).json(expenses);
   } catch (error) {
     console.error("Fetch Expense Error:", error);
@@ -95,6 +111,7 @@ exports.deleteExpense = async (req, res) => {
 exports.getMonthlySummary = async (req, res) => {
   const userId = req.user.userId;
   const { month, year } = req.query;
+  if (!month || !year) return res.status(400).json({ message: "month and year required" });
 
   try {
     const start = new Date(year, month - 1, 1);
@@ -113,16 +130,29 @@ exports.getMonthlySummary = async (req, res) => {
       .filter((e) => e.type === "income")
       .reduce((sum, e) => sum + e.amount, 0);
 
-   
+    // top categories
+    const catTotals = {};
+    expenses
+      .filter((e) => e.type === "expense")
+      .forEach((e) => (catTotals[e.category] = (catTotals[e.category] || 0) + e.amount));
+
+    const topCategories = Object.entries(catTotals)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([cat, amt]) => ({ category: cat, amount: amt }));
+
     const budget = await Budget.findOne({ userId, month, year });
     const budgetLimit = budget ? budget.limit : 0;
-    const progress = budgetLimit ? (totalExpense / budgetLimit) * 100 : 0;
+    const progress = budgetLimit ? ((totalExpense / budgetLimit) * 100).toFixed(2) : "0.00";
+    const overBudget = budgetLimit ? totalExpense > budgetLimit : false;
 
     res.json({
       totalIncome,
       totalExpense,
       budgetLimit,
-      progress: progress.toFixed(2) + "%",
+      progress: parseFloat(progress),
+      overBudget,
+      topCategories,
     });
   } catch (error) {
     console.error("Monthly Summary Error:", error);
@@ -160,11 +190,14 @@ exports.downloadExpenseExcel = async (req, res) => {
   }
 };
 
+// DownloadExpeseCSV
 exports.downloadExpenseCSV = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user.userId;
   try {
-    const expenses = await Expense.find({ userId }).sort({ date: -1 });
-    const csvPath = `expenses_${userId}.csv`;
+    const filter = buildFilter(req.query, userId);
+    const expenses = await Expense.find(filter).sort({ date: -1 });
+
+    const csvPath = `expenses_${userId}_${Date.now()}.csv`;
     const csvWriter = createObjectCsvWriter({
       path: csvPath,
       header: [
@@ -196,10 +229,13 @@ exports.downloadExpenseCSV = async (req, res) => {
   }
 };
 
+//Down load Pdf
+
 exports.downloadExpensePDF = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user.userId;
   try {
-    const expenses = await Expense.find({ userId }).sort({ date: -1 });
+    const filter = buildFilter(req.query, userId);
+    const expenses = await Expense.find(filter).sort({ date: -1 });
 
     const doc = new PDFDocument({ margin: 30, size: "A4" });
     res.setHeader("Content-disposition", `attachment; filename=expenses_${userId}.pdf`);
@@ -210,7 +246,11 @@ exports.downloadExpensePDF = async (req, res) => {
     doc.moveDown();
 
     expenses.forEach((e, idx) => {
-      doc.fontSize(12).text(`${idx + 1}. ${e.title} — ${e.category} — ${e.amount} — ${e.type} — ${new Date(e.date).toLocaleDateString()}`);
+      doc.fontSize(12).text(
+        `${idx + 1}. ${e.title} — ${e.category} — ₹${e.amount} — ${e.paymentMode} — ${new Date(
+          e.date
+        ).toLocaleDateString()}`
+      );
       doc.moveDown(0.2);
     });
 
@@ -220,4 +260,3 @@ exports.downloadExpensePDF = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-

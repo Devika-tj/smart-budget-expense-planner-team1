@@ -81,7 +81,7 @@ const Sidebar = () => {
         ☰
       </Button>
 
-      {/* Dark overlay when sidebar open in mobile */}
+      
       {open && (
         <Box
           onClick={() => setOpen(false)}
@@ -101,7 +101,7 @@ const Sidebar = () => {
           position: { xs: "fixed", md: "relative" },
           left: { xs: open ? 0 : "-260px", md: 0 },
           top: 0,
-          height: "100vh",
+          height: "auto",
           transition: "0.3s",
           zIndex: 1500,
           width: { xs: 210, sm: 200, md: 240 },

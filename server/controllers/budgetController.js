@@ -4,8 +4,14 @@ const Expense = require("../models/Expense");
 exports.setBudget = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { month, year, limit, categories = [] } = req.body;
+    let { month, year, limit, categories = [], isYearly = false } = req.body;
+
     if (!month || !year) return res.status(400).json({ message: "month and year required" });
+
+   
+    if (isYearly) {
+      limit = Number(limit) / 12;
+    }
 
     const update = { limit, categories };
     const budget = await Budget.findOneAndUpdate(
@@ -13,7 +19,13 @@ exports.setBudget = async (req, res) => {
       { $set: update },
       { upsert: true, new: true }
     );
-    res.json({ message: "Budget saved", budget });
+
+    res.json({
+      message: isYearly
+        ? "Yearly budget converted and saved as monthly budget"
+        : "Monthly budget saved",
+      budget,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
