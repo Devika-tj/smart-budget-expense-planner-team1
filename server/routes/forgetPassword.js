@@ -4,6 +4,7 @@ const User = require("../models/User");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 
 router.post("/forgot-password", async (req, res) => {
@@ -31,7 +32,7 @@ router.post("/forgot-password", async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: `"Blood Donation App" <${process.env.EMAIL_USER}>`,
+      from: `"PiggyTrack" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Password Reset",
       html: `<p>Click below to reset your password:</p>
