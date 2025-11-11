@@ -8,6 +8,8 @@ const connectDB = require("./config/db");
 const PORT = process.env.PORT || 8000;
 
 
+const createAdmin=require('./utils/admin')
+createAdmin()
 connectDB();
 
 
@@ -29,13 +31,17 @@ const budgetRoutes = require("./routes/Budgetroutes");
 const aiRoutes = require("./routes/airoutes");
 const expenseRoutes = require("./routes/ExpenseRoutes");
 const incomeRoutes = require("./routes/IncomeRoutes");
+const adminRoutes = require("./routes/dashboardRoute");
+
 
 app.use("/auth", userRoute);
 app.use("/api/forgot-password", forgetPassword);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/ai", aiRoutes);
-app.use("/api/expense", expenseRoutes); 
+app.use("/api/expense", expenseRoutes);
 app.use("/api/income", incomeRoutes);
+app.use("/api/admin", adminRoutes);
+
 
 const CreateAdmin = require("./utils/admin");
 CreateAdmin();

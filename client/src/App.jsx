@@ -10,6 +10,7 @@ import UserDashboard from "./pages/UserDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BudgetPage from "./pages/BudgetPage";
 import Home from './pages/Home'
+import Settings from './pages/Settings'
 import { Route, Routes } from 'react-router-dom'
 
 
@@ -24,6 +25,7 @@ const App = ()=>{
         <Route path='/' element={<Home />}></Route>
         <Route path='/sidebar' element={<Sidebar />}></Route>
         <Route path='/auth-success' element={<AuthSuccess />}></Route>
+        <Route path='/settings' element={<Settings />}></Route>
 
 
         {/* With Sidebar */}
