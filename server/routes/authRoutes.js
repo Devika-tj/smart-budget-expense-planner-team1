@@ -67,7 +67,7 @@ router.post("/signup", async (req, res) => {
       otpExpires: Date.now() + 5 * 60 * 1000,
     });
 
-    await sendEmail(email, "Your FinTrack Verification OTP", `Your OTP is: ${otp}`);
+    await sendEmail(email, "Your PiggyTrack Verification OTP", `Your OTP is: ${otp}`);
 
     res.status(200).json({
       message: "OTP sent to your email for verification.",
