@@ -44,11 +44,21 @@ const userSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Active", "Inactive"],
-      default: "Active", // 👈 new users will default to Active
+      default: "Active", 
+    },
+     resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
     },
 
   },
   { timestamps: true }
 );
+
+
 
 module.exports = mongoose.model("users", userSchema);

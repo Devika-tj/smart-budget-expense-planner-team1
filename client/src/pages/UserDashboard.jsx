@@ -304,7 +304,7 @@ const UserDashboard = () => {
               variant="outlined"
               sx={{ mr: 2 , borderColor: "#4819d7ff", color:"#4819d7ff"}}
               startIcon={<DownloadIcon />}
-              onClick={handleExportPDF}
+               onClick={handleExportCSV}
             >
               Download CSV
             </Button>
@@ -312,7 +312,7 @@ const UserDashboard = () => {
               variant="contained"
               sx={{ mr: 2 , backgroundColor:"#2c17b2ff"}}
               startIcon={<FileDownloadIcon />}
-              onClick={handleExportCSV}
+              onClick={handleExportPDF}
             >
               Download PDF
             </Button>
