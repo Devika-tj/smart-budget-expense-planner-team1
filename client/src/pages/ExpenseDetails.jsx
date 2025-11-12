@@ -30,7 +30,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 
-const categories = ["Food", "Rent", "Travel", "Shopping", "Bills", "Health", "Other"];
+const categories = [
+  "Food",
+  "Rent",
+  "Travel",
+  "Shopping",
+  "Bills",
+  "Health",
+  "Other",
+];
 const paymentModes = ["Cash", "Card", "UPI"];
 
 const ExpenseDetails = () => {
@@ -46,6 +54,7 @@ const ExpenseDetails = () => {
     date: new Date().toISOString().split("T")[0],
   });
   const [editId, setEditId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetchExpenses();
@@ -82,6 +91,33 @@ const ExpenseDetails = () => {
   };
 
   const handleSaveExpense = async () => {
+    const newErrors = {};
+
+    // Validation 
+    if (!newExpense.title.trim()) {
+      newErrors.title = "Title is required";
+    }
+
+    if (!newExpense.category) {
+      newErrors.category = "Please select a category";
+    }
+
+    if (!newExpense.amount || newExpense.amount <= 0) {
+      newErrors.amount = "Please enter a valid amount";
+    }
+
+    if (!newExpense.paymentMode) {
+      newErrors.paymentMode = "Please select a payment mode";
+    }
+
+    if (!newExpense.date) {
+      newErrors.date = "Please select a date";
+    }
+
+    //Set errors (if any)
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     try {
       const token = localStorage.getItem("token");
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -99,7 +135,7 @@ const ExpenseDetails = () => {
       handleClose();
     } catch (err) {
       console.error("Add/Update Expense Error:", err);
-      alert("Failed to save entry");
+      alert("Error saving expense. Please try again.");
     }
   };
 
@@ -134,7 +170,10 @@ const ExpenseDetails = () => {
     (e) => (new Date() - new Date(e.date)) / (1000 * 60 * 60 * 24) <= 7
   );
   const biggestExpense = expenses.length
-    ? expenses.reduce((max, e) => (e.amount > max.amount ? e : max), expenses[0])
+    ? expenses.reduce(
+        (max, e) => (e.amount > max.amount ? e : max),
+        expenses[0]
+      )
     : null;
 
   return (
@@ -299,8 +338,11 @@ const ExpenseDetails = () => {
               onChange={handleChange}
               fullWidth
               required
+              error={!!errors.title}
+              helperText={errors.title}
             />
-            <FormControl fullWidth>
+
+            <FormControl fullWidth error={!!errors.category}>
               <InputLabel>Category</InputLabel>
               <Select
                 name="category"
@@ -315,19 +357,15 @@ const ExpenseDetails = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel>Type</InputLabel>
-              <Select
-                name="type"
-                value={newExpense.type}
-                onChange={handleChange}
-                label="Type"
-              >
-                <MenuItem value="expense">Expense</MenuItem>
-                <MenuItem value="income">Income</MenuItem>
-              </Select>
+              {errors.category && (
+                <Typography
+                  variant="caption"
+                  color="error"
+                  sx={{ mt: 0.5, ml: 1, fontSize: "0.75rem" }}
+                >
+                  {errors.category}
+                </Typography>
+              )}
             </FormControl>
 
             <TextField
@@ -338,8 +376,11 @@ const ExpenseDetails = () => {
               fullWidth
               required
               type="number"
+              error={!!errors.amount}
+              helperText={errors.amount}
             />
-            <FormControl fullWidth>
+
+            <FormControl fullWidth error={!!errors.paymentMode}>
               <InputLabel>Payment Mode</InputLabel>
               <Select
                 name="paymentMode"
@@ -353,7 +394,17 @@ const ExpenseDetails = () => {
                   </MenuItem>
                 ))}
               </Select>
+              {errors.paymentMode && (
+                <Typography
+                  variant="caption"
+                  color="error"
+                  sx={{ mt: 0.5, ml: 1, fontSize: "0.75rem" }}
+                >
+                  {errors.paymentMode}
+                </Typography>
+              )}
             </FormControl>
+
             <TextField
               label="Date"
               name="date"
@@ -363,6 +414,8 @@ const ExpenseDetails = () => {
               required
               type="date"
               InputLabelProps={{ shrink: true }}
+              error={!!errors.date}
+              helperText={errors.date}
             />
           </Stack>
         </DialogContent>
@@ -378,4 +431,3 @@ const ExpenseDetails = () => {
 };
 
 export default ExpenseDetails;
-
