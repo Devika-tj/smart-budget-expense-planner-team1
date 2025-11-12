@@ -35,7 +35,7 @@ const adminRoutes = require("./routes/dashboardRoute");
 
 
 app.use("/auth", userRoute);
-app.use("/api/forgot-password", forgetPassword);
+app.use("/api/auth", forgetPassword);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/expense", expenseRoutes);
