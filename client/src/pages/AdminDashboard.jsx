@@ -1,128 +1,162 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Chip,
+    Box,
+    Typography,
+    Card,
+    CardContent,
+    Grid,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Chip,
+    useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 const AdminDashboard = () => {
-  const [roleFilter, setRoleFilter] = useState("All");
+    const [roleFilter, setRoleFilter] = useState("All");
+    const [users, setUsers] = useState([]);
+    const theme = useTheme();
+    const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const users = [
-    { name: "John Doe", email: "john@example.com", lastActive: "2025-10-17", role: "Admin", status: "Active" },
-    { name: "Jane Smith", email: "jane@example.com", lastActive: "2025-10-15", role: "User", status: "Inactive" },
-    { name: "Ali Khan", email: "ali@example.com", lastActive: "2025-10-18", role: "User", status: "Active" },
-    { name: "Priya Patel", email: "priya@example.com", lastActive: "2025-10-10", role: "Moderator", status: "Active" },
-  ];
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await fetch("http://localhost:8000/api/admin/users", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!res.ok) throw new Error("Failed to fetch users");
+                const data = await res.json();
+                setUsers(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
-  const filteredUsers = roleFilter === "All" ? users : users.filter((u) => u.role === roleFilter);
+        fetchUsers();
+    }, []);
 
-  return (
-    <Box
-      sx={{
-        p: { xs: 2, md: 4 },
-        backgroundColor: "#f9fafc",
-        minHeight: "100vh",
-      }}
-    >
-      <Typography variant="h5" fontWeight="bold" mb={3}>
-        User Management
-      </Typography>
+    const filteredUsers =
+        roleFilter === "All" ? users : users.filter((user) => user.role === roleFilter);
 
-      {/* Responsive Cards */}
-      <Grid container spacing={2} mb={4}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6">Total Users</Typography>
-              <Typography variant="h4" fontWeight="bold">{users.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+    return (
+        <Box sx={{ p: { xs: 2, sm: 4 }, backgroundColor: "#f9fafc", minHeight: "100vh" }}>
+            <Typography variant="h5" fontWeight="bold" mb={3} textAlign={isSmall ? "center" : "left"}>
+                User Management
+            </Typography>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6">Active Users</Typography>
-              <Typography variant="h4" fontWeight="bold">
-                {users.filter((u) => u.status === "Active").length}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+            {/* ======= Stat Cards ======= */}
+            <Grid container spacing={3} mb={4}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{ borderRadius: 3, boxShadow: 3, textAlign: "center" }}>
+                        <CardContent>
+                            <Typography variant="h6">Total Users</Typography>
+                            <Typography variant="h4" fontWeight="bold">
+                                {users.length}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{ borderRadius: 3, boxShadow: 3, textAlign: "center" }}>
+                        <CardContent>
+                            <Typography variant="h6">Active users</Typography>
+                            <Typography variant="h4" fontWeight="bold">
+                                {users.filter((u) => u.status === "Active").length}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{ borderRadius: 3, boxShadow: 3, textAlign: "center" }}>
+                        <CardContent>
+                            <Typography variant="h6">Inactive</Typography>
+                            <Typography variant="h4" fontWeight="bold">
+                                {users.filter((u) => u.status === "Inactive").length}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6">New Users (This Month)</Typography>
-              <Typography variant="h4" fontWeight="bold">5</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            {/* ======= Filter Section ======= */}
+            {/* <Box
+                mb={2}
+                display="flex"
+                flexDirection={isSmall ? "column" : "row"}
+                alignItems={isSmall ? "stretch" : "center"}
+                gap={2}
+            >
+                <FormControl fullWidth={isSmall} sx={{ minWidth: isSmall ? "100%" : 200 }}>
+                    <InputLabel>Filter by Role</InputLabel>
+                    <Select
+                        value={roleFilter}
+                        label="Filter by Role"
+                        onChange={(e) => setRoleFilter(e.target.value)}
+                    >
+                        <MenuItem value="All">All</MenuItem>
+                        <MenuItem value="admin">Admin</MenuItem>
+                        <MenuItem value="user">User</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box> */}
 
-
-
-      {/* Responsive Table */}
-      <TableContainer
-        component={Paper}
-        sx={{
-          borderRadius: 3,
-          boxShadow: 3,
-          overflowX: "auto",
-        }}
-      >
-        <Box sx={{ minWidth: "750px" }}>
-          <Table>
-            <TableHead sx={{ backgroundColor: "#1976d2" }}>
-              <TableRow>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Name</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Email</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Last Active</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Role</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Status</TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {filteredUsers.map((user, index) => (
-                <TableRow key={index}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.lastActive}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={user.status}
-                      color={user.status === "Active" ? "success" : "default"}
-                      variant="outlined"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-
-          </Table>
+            {/* ======= Table Section ======= */}
+            <TableContainer
+                component={Paper}
+                sx={{
+                    borderRadius: 3,
+                    boxShadow: 3,
+                    overflowX: "auto",
+                    width: "100%",
+                }}
+            >
+                <Table sx={{ minWidth: 650 }}>
+                    <TableHead sx={{ backgroundColor: "#1976d2" }}>
+                        <TableRow>
+                            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Name</TableCell>
+                            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Email</TableCell>
+                            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Status</TableCell>
+                            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Created At</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {filteredUsers.map((user, index) => (
+                            <TableRow
+                                key={index}
+                                sx={{
+                                    "&:hover": { backgroundColor: "#f1f5f9" },
+                                    whiteSpace: "nowrap",
+                                }}
+                            >
+                                <TableCell>{user.fullName}</TableCell>
+                                <TableCell sx={{ wordBreak: "break-word" }}>{user.email}</TableCell>
+                                <TableCell>
+                                    <Chip
+                                        label={user.status}
+                                        color={user.status === "Active" ? "success" : "danger"}
+                                        size="small"
+                                    />
+                                </TableCell>
+                                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Box>
-      </TableContainer>
-    </Box>
-  );
+    );
 };
 
 export default AdminDashboard;
-
-

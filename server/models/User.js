@@ -40,6 +40,13 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+
+    status: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Active", // 👈 new users will default to Active
+    },
+
   },
   { timestamps: true }
 );
