@@ -9,7 +9,7 @@ const Sidebar = () => {
   const [active, setActive] = useState("Dashboard");
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false); // For toggle
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -17,13 +17,6 @@ const Sidebar = () => {
       setUser(JSON.parse(storedUser));
     }
   }, []);
-
-
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("user");
-  //   navigate("/");
-  // };
 
 const handleLogout = async () => {
 
@@ -87,7 +80,7 @@ const handleLogout = async () => {
 
   return (
     <Box sx={{ display: "flex", position: "relative" }}>
-      {/* Toggle Button */}
+      
       <Button
         onClick={() => setOpen(true)}
         sx={{
@@ -124,7 +117,7 @@ const handleLogout = async () => {
         />
       )}
 
-      {/* Sidebar */}
+      
       <Box
         sx={{
           position: { xs: "fixed", md: "relative" },
@@ -189,7 +182,7 @@ const handleLogout = async () => {
                 setActive(item.name);
                 if (item.name === "LogOut") handleLogout();
                 else navigate(item.path);
-                setOpen(false); // close when selecting on mobile
+                setOpen(false); 
               }}
               startIcon={item.icon}
               fullWidth

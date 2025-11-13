@@ -146,7 +146,7 @@ const IncomePage = () => {
         px: { xs: 2, sm: 3, md: 4 },
       }}
     >
-      {/* Header */}
+      
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="space-between"
@@ -170,7 +170,7 @@ const IncomePage = () => {
         </Button>
       </Stack>
 
-      {/* Toggle Row */}
+      
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="space-between"
@@ -187,7 +187,7 @@ const IncomePage = () => {
         </Stack>
       </Stack>
 
-      {/* Table */}
+      
       <TableContainer
         component={Paper}
         sx={{
@@ -257,7 +257,7 @@ const IncomePage = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialog */}
+      
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
         <DialogTitle
           sx={{ textAlign: "center", fontWeight: "bold", fontSize: "1.2rem" }}

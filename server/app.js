@@ -43,7 +43,6 @@ app.use("/api/income", incomeRoutes);
 app.use("/api/admin", adminRoutes);
 
 
-// const CreateAdmin = require("./utils/admin");
-// CreateAdmin();
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

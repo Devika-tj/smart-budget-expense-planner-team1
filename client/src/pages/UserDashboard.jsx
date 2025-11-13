@@ -161,7 +161,7 @@ const UserDashboard = () => {
     const token = localStorage.getItem("token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-    // Build query parameters
+    
     const params = new URLSearchParams();
 
     if (filters.startDate) params.append("startDate", filters.startDate);
@@ -180,7 +180,7 @@ const UserDashboard = () => {
       responseType: "blob",
     });
 
-    // Create and trigger download
+    
     const blob = new Blob([res.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -323,38 +323,7 @@ const UserDashboard = () => {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-           {/* <FormControl sx={{width: 200}} >
-              <InputLabel>Category</InputLabel>
-              <Select
-                name="category"
-                value={newExpense.category}
-                onChange={handleChange}
-                label="Category"
-                required
-              >
-                {categories.map((c) => (
-                  <MenuItem key={c} value={c}>
-                    {c}
-                  </MenuItem>
-                ))}
-              </Select>
-              
-            </FormControl> */}
-          {/* <FormControl sx={{width: 200}}>
-                       <InputLabel>Payment Mode</InputLabel>
-                       <Select
-                         name="paymentMode"
-                         value={newExpense.paymentMode}
-                         onChange={handleChange}
-                         label="Payment Mode"
-                       >
-                         {paymentModes.map((p) => (
-                           <MenuItem key={p} value={p}>
-                             {p}
-                           </MenuItem>
-                         ))}
-                       </Select>
-                         </FormControl> */}
+           
           <Grid item xs={12} display="flex" justifyContent="flex-start" mt={1}>
             <Button
               variant="outlined"

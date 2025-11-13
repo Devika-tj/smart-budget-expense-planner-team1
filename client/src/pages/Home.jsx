@@ -32,7 +32,7 @@ const Home = () => {
     arrows: false,
     autoplay: true,
     autoplaySpeed: 3000,
-    adaptiveHeight: true, // for better mobile fit
+    adaptiveHeight: true, 
   };
 
   const [openAuth, setOpenAuth] = useState(false);
@@ -47,7 +47,7 @@ const Home = () => {
   return (
     <div>
       <Navbar/>
-      {/* Hero Section */}
+      
       <Container
         maxWidth="lg"
         sx={{
@@ -129,7 +129,7 @@ const Home = () => {
         </Box>
       </Container>
 
-      {/* Slider Section */}
+      
       <Container maxWidth="lg" sx={{ my: 6 }}>
         <Card
           id="features-section"
@@ -141,7 +141,7 @@ const Home = () => {
           }}
         >
           <Slider {...settings}>
-            {/* Slide 1 */}
+            
             <CardContent>
               <Typography
                 variant="h5"
@@ -205,7 +205,7 @@ const Home = () => {
               </Box>
             </CardContent>
 
-            {/* Slide 2 */}
+            
             <CardContent>
               <Typography
                 variant="h5"
@@ -268,7 +268,7 @@ const Home = () => {
               </Box>
             </CardContent>
 
-            {/* Slide 3 */}
+            
             <CardContent>
               <Typography
                 variant="h5"

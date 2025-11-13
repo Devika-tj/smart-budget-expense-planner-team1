@@ -23,14 +23,14 @@ function buildFilter(query, userId) {
 }
 
 
-//  Add Expense or Income
+
 exports.addExpense = async (req, res) => {
   const userId = req.user.userId;
 
   try {
     const { title, category, amount, paymentMode, date, type } = req.body;
 
-    // Validation
+    
     if (!title || !category || !amount || !date || !paymentMode) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -57,7 +57,7 @@ exports.addExpense = async (req, res) => {
   }
 };
 
-//  Get all expenses for a user
+
 exports.getAllExpense = async (req, res) => {
   const userId = req.user.userId;
   try {
@@ -70,7 +70,7 @@ exports.getAllExpense = async (req, res) => {
   }
 };
 
-// Update Expense
+
 exports.updateExpense = async (req, res) => {
   try {
     const { title, category, amount, paymentMode, date, type } = req.body;
@@ -95,7 +95,7 @@ exports.updateExpense = async (req, res) => {
   }
 };
 
-//  Delete Expense
+
 exports.deleteExpense = async (req, res) => {
   try {
     const deletedExpense = await Expense.findByIdAndDelete(req.params.id);
@@ -109,7 +109,7 @@ exports.deleteExpense = async (req, res) => {
   }
 };
 
-//  Monthly Summary & Budget Progress
+
 exports.getMonthlySummary = async (req, res) => {
   const userId = req.user.userId;
   const { month, year } = req.query;
@@ -132,7 +132,7 @@ exports.getMonthlySummary = async (req, res) => {
       .filter((e) => e.type === "income")
       .reduce((sum, e) => sum + e.amount, 0);
 
-    // top categories
+    
     const catTotals = {};
     expenses
       .filter((e) => e.type === "expense")
@@ -162,7 +162,7 @@ exports.getMonthlySummary = async (req, res) => {
   }
 };
 
-//  Download Expense Report (Excel)
+
 exports.downloadExpenseExcel = async (req, res) => {
   const userId = req.user.userId;
 
@@ -192,7 +192,7 @@ exports.downloadExpenseExcel = async (req, res) => {
   }
 };
 
-// DownloadExpeseCSV
+
 exports.downloadExpenseCSV = async (req, res) => {
   const userId = req.user.userId;
   try {
@@ -231,7 +231,7 @@ exports.downloadExpenseCSV = async (req, res) => {
   }
 };
 
-//Down load Pdf
+
 
 exports.downloadExpensePDF = async (req, res) => {
   const userId = req.user.userId;

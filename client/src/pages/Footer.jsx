@@ -24,7 +24,7 @@ const Footer = () => {
         direction={{ xs: 'column', sm: 'row' }}
         textAlign={{ xs: 'center', sm: 'left' }}
       >
-        {/* About Section */}
+        
         <Grid item xs={12} sm={6} md={4}>
           <Typography variant="h6" gutterBottom>
             <b>About</b>
@@ -37,7 +37,7 @@ const Footer = () => {
           </Typography>
         </Grid>
 
-        {/* Contact Section */}
+        
         <Grid item xs={12} sm={6} md={4}>
           <Typography variant="h6" gutterBottom>
             <b>Contact</b>

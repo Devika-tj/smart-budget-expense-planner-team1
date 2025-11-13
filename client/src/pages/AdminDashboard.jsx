@@ -88,7 +88,7 @@ const AdminDashboard = () => {
         User Management
       </Typography>
 
-      {/* ======= Stat Cards ======= */}
+      
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} sm={6} md={4}>
           <Card sx={{ borderRadius: 3, boxShadow: 3, textAlign: "center" }}>
@@ -165,7 +165,7 @@ const AdminDashboard = () => {
       )}
       {spendingData && (
         <>
-          {/* Top 5 Spenders */}
+          
           <Typography variant="h6" mb={1} fontWeight="bold">
           Top 5 Spenders
           </Typography>
@@ -199,7 +199,7 @@ const AdminDashboard = () => {
             </Table>
           </TableContainer>
 
-          {/* Top 5 Categories */}
+          
           <Typography variant="h6" mb={1} fontWeight="bold">
           Top 5 Spending Categories
           </Typography>
@@ -231,7 +231,7 @@ const AdminDashboard = () => {
         </>
       )}
 
-      {/* ======= Table Section ======= */}
+      
       <Typography variant="h6" mb={1} fontWeight="bold">
         Manage Users
       </Typography>

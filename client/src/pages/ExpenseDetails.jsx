@@ -93,7 +93,7 @@ const ExpenseDetails = () => {
   const handleSaveExpense = async () => {
     const newErrors = {};
 
-    // Validation 
+     
     if (!newExpense.title.trim()) {
       newErrors.title = "Title is required";
     }
@@ -185,7 +185,7 @@ const ExpenseDetails = () => {
         px: { xs: 2, sm: 3, md: 4 },
       }}
     >
-      {/* Header */}
+      
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="space-between"
@@ -210,7 +210,7 @@ const ExpenseDetails = () => {
         </Button>
       </Stack>
 
-      {/* Summary Cards */}
+      
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { title: "Total Expenses", value: `₹${totalExpense.toFixed(2)}` },
@@ -242,7 +242,7 @@ const ExpenseDetails = () => {
         ))}
       </Grid>
 
-      {/* Toggle Row */}
+      
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="space-between"
@@ -259,7 +259,7 @@ const ExpenseDetails = () => {
         </Stack>
       </Stack>
 
-      {/* Table */}
+      
       <TableContainer
         component={Paper}
         sx={{
@@ -322,7 +322,7 @@ const ExpenseDetails = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialog */}
+    
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
         <DialogTitle
           sx={{ textAlign: "center", fontWeight: "bold", fontSize: "1.2rem" }}

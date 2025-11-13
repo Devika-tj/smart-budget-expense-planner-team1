@@ -106,7 +106,7 @@ router.post("/resend-otp", async (req, res) => {
   }
 });
 
-// ------------------ USER LOGIN ------------------
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -134,7 +134,7 @@ router.post("/login", async (req, res) => {
 
 
 
-// ------------------ USER LOGOUT ------------------
+
 router.post("/logout", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(400).json({ message: "No token provided" });
@@ -160,10 +160,9 @@ router.post("/logout", async (req, res) => {
 
 
 
-// ------------------ ADMIN UPDATE USER ------------------
 router.patch("/update/:id", protect, async (req, res) => {
   try {
-    //Only admin can update users
+    
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
     }
@@ -171,7 +170,7 @@ router.patch("/update/:id", protect, async (req, res) => {
     const userId = req.params.id;
     const updateData = req.body;
 
-    //Prevent password change here for safety
+    
     if (updateData.password) {
       delete updateData.password;
     }
@@ -197,7 +196,7 @@ router.patch("/update/:id", protect, async (req, res) => {
 
 
 
-// ------------------ GOOGLE OAUTH ------------------
+
 
 router.get(
   "/google",
@@ -217,7 +216,7 @@ router.get(
         { expiresIn: "7d" }
       );
 
-      // Encode user for redirect
+     
       const encodedUser = encodeURIComponent(JSON.stringify(req.user));
 
     
@@ -255,16 +254,16 @@ router.put("/update", protect, async (req, res) => {
       return res.status(404).json({ success: false, msg: "User not found" });
     }
   if(currentPassword && newPassword !=""){
-    // Verify current password
+    
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, msg: "Current password incorrect" });
     }
   }
-    // Update name
+    
     if (fullName) user.fullName = fullName;
 
-    // Update password if provided
+    
     if (newPassword && newPassword.trim() !== "") {
       const hashed = await bcrypt.hash(newPassword, 10);
       user.password = hashed;

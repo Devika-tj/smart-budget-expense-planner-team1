@@ -30,7 +30,7 @@ const SettingsPage = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate(); 
 
-  // Fetch current user details
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -52,7 +52,7 @@ const SettingsPage = () => {
     fetchUser();
   }, [token]);
 
-  // Handle profile update
+  
   const handleUpdate = async (e) => {
     e.preventDefault();
     setUpdating(true);
@@ -82,10 +82,10 @@ const SettingsPage = () => {
     }
   };
 
-  // Render content based on active tab
+  
   const renderContent = () => {
     switch (activeTab.toLowerCase().trim()) {
-      // ------------------ PROFILE SETTINGS ------------------
+      
       case "profile settings":
         if (loading)
           return (
@@ -166,7 +166,7 @@ const SettingsPage = () => {
           </Paper>
         );
 
-      // ------------------ SUPPORT TAB ------------------
+      
       case "support":
         return (
           <Paper
@@ -194,7 +194,7 @@ const SettingsPage = () => {
           </Paper>
         );
 
-      // ------------------ TERMS TAB ------------------
+      
       case "terms and policies":
         return (
           <Paper
@@ -265,7 +265,7 @@ const SettingsPage = () => {
     <Box
       sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#dcdcdc" }}
     >
-      {/* Sidebar */}
+      
       <Box
         sx={{
           width: 200,
