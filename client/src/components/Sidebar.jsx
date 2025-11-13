@@ -3,6 +3,7 @@ import { Home, DollarSign, Receipt, LogOut as LogOutIcon, Settings } from "lucid
 import { Box, Avatar, Typography, Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import axios from "axios"
 
 const Sidebar = () => {
   const [active, setActive] = useState("Dashboard");
@@ -17,11 +18,32 @@ const Sidebar = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("user");
+  //   navigate("/");
+  // };
+
+
+  const handleLogout = async () => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    try {
+      await axios.post(
+        "http://localhost:8000/auth/logout",
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  navigate("/");
+};
 
   const allMenuItems = [
     {

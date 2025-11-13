@@ -44,9 +44,12 @@ const userSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Active", "Inactive"],
-      default: "Active", // 👈 new users will default to Active
+      default: "Inactive",
     },
-
+    lastActive: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
