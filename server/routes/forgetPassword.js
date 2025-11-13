@@ -13,38 +13,26 @@ router.post("/forgot-password", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    
+
     const token = crypto.randomBytes(32).toString("hex");
     user.resetPasswordToken = token;
     user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 min
     await user.save();
 
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
-
-    // const transporter = nodemailer.createTransport({
-    //   host: "smtp.gmail.com",
-    //   port: 465,
-    //   secure: true,
-    //   auth: {
-    //     user: process.env.EMAIL_USER,
-    //     pass: process.env.EMAIL_PASS,
-    //   },
-    // });
-
-
     const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
 
-    rejectUnauthorized: process.env.NODE_ENV === "production" ? true : false,
-  },
-});
+        rejectUnauthorized: process.env.NODE_ENV === "production" ? true : false,
+      },
+    });
 
 
     await transporter.sendMail({

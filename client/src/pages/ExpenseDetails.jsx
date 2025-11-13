@@ -114,7 +114,7 @@ const ExpenseDetails = () => {
       newErrors.date = "Please select a date";
     }
 
-    //Set errors (if any)
+    
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 

@@ -9,34 +9,6 @@ const {generateOTP}=require("../utils/generateotp")
 const {sendEmail}=require("../utils/sendemail")
 const { protect } = require("../middleware/authMiddleware");
 
-// ------------------ USER SIGNUP ------------------
-// router.post("/signup", async (req, res) => {
-//   try {
-//     const { role, fullName, email, password } = req.body;
-//     if (!fullName || !email || !password) {
-//       return res.status(400).json({ message: "All fields are required" });
-//     }
-
-//     const existingUser = await userModel.findOne({ email });
-//     if (existingUser)
-//       return res.status(400).json({ message: "Email already registered" });
-
-//     const hashed = await bcrypt.hash(password, 10);
-
-//     const newUser = new userModel({
-//       role: role === "admin" ? "admin" : "user",
-//       fullName,
-//       email,
-//       password: hashed,
-//     });
-
-//     await newUser.save();
-//     res.status(201).json({ message: "Signup successful!" });
-//   } catch (er) {
-//     console.error(er);
-//     res.status(400).send("Can't add new user");
-//   }
-// });
 
 router.post("/signup", async (req, res) => {
   try {
@@ -79,7 +51,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// 🔹 Step 2: Verify OTP (Create Real User)
+
 router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -113,7 +85,7 @@ router.post("/verify-otp", async (req, res) => {
   }
 });
 
-// 🔹 Step 3: Resend OTP
+
 router.post("/resend-otp", async (req, res) => {
   try {
     const { email } = req.body;
@@ -150,7 +122,7 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
+    await userModel.findByIdAndUpdate(user._id, { status: "Active", role:"user", lastActive: new Date() });
     res.status(200).json({ message: "Login successful", token, user });
   } catch (er) {
     console.error(er);
@@ -158,7 +130,30 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ------------------ GOOGLE OAUTH ------------------
+
+//  USER LOGOUT
+router.post("/logout", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(400).json({ message: "No token provided" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findById(decoded.id);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.status = "Inactive";
+    user.lastActive = new Date();
+    await user.save();
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(401).json({ message: "Invalid or expired token" });
+  }
+});
+
+//  GOOGLE OAUTH 
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -191,7 +186,7 @@ router.get(
   }
 );
 
-// ------------------ CURRENT USER ------------------
+
 router.get("/me", protect, async (req, res) => {
   try {
     const user = await userModel
@@ -205,7 +200,7 @@ router.get("/me", protect, async (req, res) => {
   }
 });
 
-// ------------------ UPDATE USER PROFILE ------------------
+
 router.put("/update", protect, async (req, res) => {
   try {
     const { fullName, currentPassword, newPassword } = req.body;

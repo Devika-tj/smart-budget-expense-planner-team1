@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("../models/User.js");
 const jwt = require("jsonwebtoken");
 
-// 🔒 Middleware to verify JWT token
+
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]; // "Bearer <token>"
 
@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// 🧩 GET all users (Admin only)
+
 router.get("/users", verifyToken, async (req, res) => {
   try {
     // only allow admins

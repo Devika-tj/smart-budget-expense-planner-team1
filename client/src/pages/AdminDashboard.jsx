@@ -45,10 +45,12 @@ const AdminDashboard = () => {
         };
 
         fetchUsers();
+        const interval=setInterval(fetchUsers,3000);
+        return ()=> clearInterval(interval);
     }, []);
 
-    const filteredUsers =
-        roleFilter === "All" ? users : users.filter((user) => user.role === roleFilter);
+    
+        const filteredUsers = users.filter((user) => user.role === "user");
 
     return (
         <Box sx={{ p: { xs: 2, sm: 4 }, backgroundColor: "#f9fafc", minHeight: "100vh" }}>
@@ -63,7 +65,7 @@ const AdminDashboard = () => {
                         <CardContent>
                             <Typography variant="h6">Total Users</Typography>
                             <Typography variant="h4" fontWeight="bold">
-                                {users.length}
+                                {filteredUsers.length}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -73,7 +75,7 @@ const AdminDashboard = () => {
                         <CardContent>
                             <Typography variant="h6">Active users</Typography>
                             <Typography variant="h4" fontWeight="bold">
-                                {users.filter((u) => u.status === "Active").length}
+                                {filteredUsers.filter((u) => u.status === "Active").length}
                             </Typography>
                         </CardContent>
                     </Card>
@@ -83,34 +85,14 @@ const AdminDashboard = () => {
                         <CardContent>
                             <Typography variant="h6">Inactive</Typography>
                             <Typography variant="h4" fontWeight="bold">
-                                {users.filter((u) => u.status === "Inactive").length}
+                                {filteredUsers.filter((u) => u.status === "Inactive").length}
                             </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
             </Grid>
 
-            {/* ======= Filter Section ======= */}
-            {/* <Box
-                mb={2}
-                display="flex"
-                flexDirection={isSmall ? "column" : "row"}
-                alignItems={isSmall ? "stretch" : "center"}
-                gap={2}
-            >
-                <FormControl fullWidth={isSmall} sx={{ minWidth: isSmall ? "100%" : 200 }}>
-                    <InputLabel>Filter by Role</InputLabel>
-                    <Select
-                        value={roleFilter}
-                        label="Filter by Role"
-                        onChange={(e) => setRoleFilter(e.target.value)}
-                    >
-                        <MenuItem value="All">All</MenuItem>
-                        <MenuItem value="admin">Admin</MenuItem>
-                        <MenuItem value="user">User</MenuItem>
-                    </Select>
-                </FormControl>
-            </Box> */}
+            
 
             {/* ======= Table Section ======= */}
             <TableContainer

@@ -158,6 +158,23 @@ const AuthDialog = ({
   const isForgot = mode === "forgot";
   const isReset = mode === "reset";
 
+  useEffect(() => {
+    // Reset form only when switching between login and signup
+    if (isLogin || isSignup) {
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    }
+
+    // Keep email when switching to forgot-password
+    if (isForgot) {
+      setFormData((prev) => ({ ...prev, password: "", confirmPassword: "" }));
+    }
+  }, [mode]);
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

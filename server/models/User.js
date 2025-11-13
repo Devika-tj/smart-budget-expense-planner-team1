@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
     fullName: {
       type: String,
       required: function () {
-        return !this.googleId; 
+        return !this.googleId;
       },
       minlength: [3, "Name must be at least 3 characters"],
     },
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: function () {
-        return !this.googleId; 
+        return !this.googleId;
       },
       minlength: [6, "Password must be at least 6 characters"],
     },
@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
-      default: "", 
+      default: "",
     },
 
     role: {
@@ -41,12 +41,7 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
-    status: {
-      type: String,
-      enum: ["Active", "Inactive"],
-      default: "Active", 
-    },
-     resetPasswordToken: {
+    resetPasswordToken: {
       type: String,
       default: null,
     },
@@ -54,7 +49,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-
+    status: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Inactive",
+    },
+    lastActive: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
