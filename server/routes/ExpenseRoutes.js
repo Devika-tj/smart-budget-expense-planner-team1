@@ -22,6 +22,7 @@ router.delete("/:id", protect, deleteExpense);
 
 router.get("/downloadcsv", protect, downloadExpenseCSV);
 router.get("/downloadpdf", protect, downloadExpensePDF);
+router.get("/downloadfilteredpdf", protect, downloadExpensePDF);
 
 
 router.get("/aisuggestions", protect, suggestions);

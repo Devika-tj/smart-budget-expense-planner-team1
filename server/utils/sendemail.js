@@ -10,6 +10,9 @@ exports.sendEmail = async (to, subject, text) => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      tls: {
+        rejectUnauthorized: false, 
+      },
     });
 
     await transporter.sendMail({

@@ -18,14 +18,15 @@ const Sidebar = () => {
     }
   }, []);
 
+
   // const handleLogout = () => {
   //   localStorage.removeItem("token");
   //   localStorage.removeItem("user");
   //   navigate("/");
   // };
 
+const handleLogout = async () => {
 
-  const handleLogout = async () => {
   const token = localStorage.getItem("token");
 
   if (token) {

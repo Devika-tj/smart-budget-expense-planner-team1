@@ -1,11 +1,13 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Expense = require("../models/Expense");
 const Budget = require("../models/Budget");
+const Income = require("../models/Income");
+
 require("dotenv").config();
 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const MODEL_NAME = "gemini-2.5-flash"; 
+const MODEL_NAME = "gemini-2.5-flash";
 
 function buildCategorySummary(expenses) {
   const totals = {};
@@ -79,16 +81,22 @@ exports.monthlySummaryParagraph = async (req, res) => {
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 0, 23, 59, 59);
 
-    const expenses = await Expense.find({
+
+    const incomes = await Income.find({
       userId,
       date: { $gte: start, $lte: end },
     });
 
-    const incomes = expenses.filter((e) => e.type === "income");
-    const out = expenses.filter((e) => e.type === "expense");
+    const out = await Expense.find({
+      userId,
+      date: { $gte: start, $lte: end },
+    });
 
     const { totals: expenseTotals, total: totalExpense } = buildCategorySummary(out);
     const { total: totalIncome } = buildCategorySummary(incomes);
+
+
+
 
     const topCats = Object.entries(expenseTotals)
       .sort((a, b) => b[1] - a[1])
@@ -125,4 +133,7 @@ Income: ₹${totalIncome}. Expenses: ₹${totalExpense}. Top categories: ${topCa
     console.error("AI Monthly Summary Error:", err);
     res.status(500).json({ message: "AI monthly summary failed" });
   }
-};
+}
+
+
+

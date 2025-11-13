@@ -51,7 +51,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// 🔹 Step 2: Verify OTP (Create Real User)
+
 router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -85,7 +85,7 @@ router.post("/verify-otp", async (req, res) => {
   }
 });
 
-// 🔹 Step 3: Resend OTP
+
 router.post("/resend-otp", async (req, res) => {
   try {
     const { email } = req.body;
@@ -122,13 +122,16 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
+
     await userModel.findByIdAndUpdate(user._id, { status: "Active", lastActive: new Date() });
+
     res.status(200).json({ message: "Login successful", token, user });
   } catch (er) {
     console.error(er);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 // ------------------ USER LOGOUT ------------------
@@ -152,6 +155,7 @@ router.post("/logout", async (req, res) => {
     res.status(401).json({ message: "Invalid or expired token" });
   }
 });
+
 
 
 
@@ -194,6 +198,7 @@ router.patch("/update/:id", protect, async (req, res) => {
 
 
 // ------------------ GOOGLE OAUTH ------------------
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -226,7 +231,7 @@ router.get(
   }
 );
 
-// ------------------ CURRENT USER ------------------
+
 router.get("/me", protect, async (req, res) => {
   try {
     const user = await userModel
@@ -240,7 +245,7 @@ router.get("/me", protect, async (req, res) => {
   }
 });
 
-// ------------------ UPDATE USER PROFILE ------------------
+
 router.put("/update", protect, async (req, res) => {
   try {
     const { fullName, currentPassword, newPassword } = req.body;
@@ -249,13 +254,13 @@ router.put("/update", protect, async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, msg: "User not found" });
     }
-
+  if(currentPassword && newPassword !=""){
     // Verify current password
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, msg: "Current password incorrect" });
     }
-
+  }
     // Update name
     if (fullName) user.fullName = fullName;
 

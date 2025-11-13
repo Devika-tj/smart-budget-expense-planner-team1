@@ -21,7 +21,7 @@ const SettingsPage = () => {
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  // Profile form fields
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -323,7 +323,7 @@ const SettingsPage = () => {
         </Button>
       </Box>
 
-      {/* Content Area */}
+      
       <Grid
         container
         sx={{

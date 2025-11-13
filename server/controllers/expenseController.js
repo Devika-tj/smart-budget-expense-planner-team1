@@ -1,9 +1,11 @@
 const xlsx = require("xlsx");
 const Expense = require("../models/Expense");
+const aiController = require("../controllers/aicontroller")
 const Budget = require("../models/Budget");
 const fs = require("fs");
 const { createObjectCsvWriter } = require("csv-writer");
 const PDFDocument = require("pdfkit");
+
 
 
 function buildFilter(query, userId) {
@@ -233,30 +235,61 @@ exports.downloadExpenseCSV = async (req, res) => {
 
 exports.downloadExpensePDF = async (req, res) => {
   const userId = req.user.userId;
+
   try {
+    const { month, year } = req.query;
     const filter = buildFilter(req.query, userId);
     const expenses = await Expense.find(filter).sort({ date: -1 });
 
-    const doc = new PDFDocument({ margin: 30, size: "A4" });
-    res.setHeader("Content-disposition", `attachment; filename=expenses_${userId}.pdf`);
-    res.setHeader("Content-type", "application/pdf");
+   
+    let aiSummary = "No AI summary available.";
+    if (month && year) {
+      try {
+        const fakeReq = { user: { userId }, query: { month, year } };
+        const fakeRes = {
+          json: (data) => (aiSummary = data.summary || "No summary generated"),
+          status: () => ({ json: () => {} }),
+        };
+        await aiController.monthlySummaryParagraph(fakeReq, fakeRes);
+      } catch (e) {
+        console.warn("AI Summary generation failed:", e.message);
+      }
+    }
 
+  
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+    res.setHeader("Content-disposition", `attachment; filename=filtered_expenses_${userId}.pdf`);
+    res.setHeader("Content-type", "application/pdf");
     doc.pipe(res);
+
+   
     doc.fontSize(18).text("Expense Report", { align: "center" });
     doc.moveDown();
 
-    expenses.forEach((e, idx) => {
-      doc.fontSize(12).text(
-        `${idx + 1}. ${e.title} — ${e.category} — ₹${e.amount} — ${e.paymentMode} — ${new Date(
-          e.date
-        ).toLocaleDateString()}`
-      );
-      doc.moveDown(0.2);
-    });
+  
+    doc.fontSize(12).fillColor("#000").text("AI Summary:", { underline: true });
+    doc.moveDown(0.5);
+    doc.fontSize(11).fillColor("#333").text(aiSummary, { align: "left" });
+    doc.moveDown(1);
+
+   
+    if (!expenses.length) {
+      doc.fontSize(12).text("No data found for the selected filters.");
+    } else {
+      expenses.forEach((e, idx) => {
+        doc.fontSize(12).text(
+          `${idx + 1}. ${e.title} — ${e.category} — ₹${e.amount} — ${e.paymentMode} — ${new Date(
+            e.date
+          ).toLocaleDateString()}`
+        );
+        doc.moveDown(0.2);
+      });
+    }
 
     doc.end();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Filtered PDF generation failed:", err);
+    res.status(500).json({ message: "Server error generating filtered PDF" });
   }
 };
+

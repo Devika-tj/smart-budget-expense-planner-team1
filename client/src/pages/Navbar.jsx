@@ -15,7 +15,7 @@ import AuthDialog from '../components/AuthDialog';
 
 const Navbar = () => {
   const [openAuth, setOpenAuth] = useState(false);
-  const [authMode, setAuthMode] = useState("login"); // 'login' or 'signup'
+  const [authMode, setAuthMode] = useState("login"); 
   const [anchorElNav, setAnchorElNav] = useState(null);
 
   const handleOpen = (mode) => {
@@ -37,7 +37,7 @@ const Navbar = () => {
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" sx={{ backgroundColor: 'white', color: '#1e3a8a'}}>
           <Toolbar>
-            {/* Logo */}
+           
             <IconButton
               size="large"
               edge="start"
@@ -48,7 +48,7 @@ const Navbar = () => {
               
             </IconButton>
 
-            {/* Title */}
+          
             <Typography
               variant="h6"
               component="div"
@@ -63,7 +63,7 @@ const Navbar = () => {
               </Link>
             </Typography>
 
-            {/* Middle Links  */}
+           
             <Box
               sx={{
                 position: "absolute",
@@ -103,7 +103,7 @@ const Navbar = () => {
               </ScrollLink>
             </Box>
 
-            {/* Login Button */}
+            
             <Button
               variant="contained"
               onClick={() => handleOpen("login")}
@@ -116,7 +116,7 @@ const Navbar = () => {
               Login
             </Button>
 
-            {/* Mobile Menu Icon */}
+          
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"

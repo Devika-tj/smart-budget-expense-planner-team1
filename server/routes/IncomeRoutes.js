@@ -7,7 +7,7 @@ const { protect } = require("../middleware/authMiddleware");
 router.post("/", protect, async (req, res) => {
   try {
     const { title, description, amount, category } = req.body;
-    const userId = req.user.id; // from token
+    const userId = req.user.id; 
 
     if (!title || !amount || !category) {
       return res.status(400).json({ message: "Please fill all required fields" });

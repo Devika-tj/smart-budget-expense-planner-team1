@@ -20,7 +20,7 @@ const App = ()=>{
   return (
     <div>
 
-      {/* Without Sidebar */}
+    
 
       <Routes>
         <Route path='/' element={<Home />}></Route>
@@ -31,7 +31,7 @@ const App = ()=>{
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
 
-        {/* With Sidebar */}
+     
         <Route
           path="/admindash"
           element={

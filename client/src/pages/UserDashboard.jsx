@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  Container, Typography, Grid, Paper, Box, Button, CircularProgress, Divider, TextField, Stack, Alert
+  Container, Typography, Grid, Paper, Box, Button, CircularProgress, Divider, TextField, Stack, Alert, FormControl, InputLabel, Select, MenuItem
 } from "@mui/material";
 import DownloadIcon from '@mui/icons-material/Download';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -8,6 +8,18 @@ import { Pie, Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+const categories = [
+  "Food",
+  "Rent",
+  "Travel",
+  "Shopping",
+  "Bills",
+  "Health",
+  "Other",
+];
+const paymentModes = ["Cash", "Card", "UPI"];
+
 
 const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -110,6 +122,20 @@ const UserDashboard = () => {
     datasets: [{ label: "Amount (₹)", data: [totalIncome, totalExpense, totalSavings] }],
   };
 
+  const [newExpense, setNewExpense] = useState({
+      title: "",
+      category: "",
+      amount: "",
+      paymentMode: "Cash",
+      type: "expense",
+      date: new Date().toISOString().split("T")[0],
+    });
+
+    const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewExpense((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleExportCSV = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -131,24 +157,43 @@ const UserDashboard = () => {
   };
 
   const handleExportPDF = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      const q = new URLSearchParams(filters).toString();
-      const res = await axios.get(`http://localhost:8000/api/expense/downloadpdf?${q}`, {
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `expenses_${month}_${year}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-    } catch (err) {
-      console.error("PDF download error", err);
-      alert("Failed to download PDF");
-    }
-  };
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    // Build query parameters
+    const params = new URLSearchParams();
+
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
+    if (filters.category) params.append("category", filters.category);
+    if (filters.paymentMode) params.append("paymentMode", filters.paymentMode);
+
+    const now = new Date();
+    params.append("month", now.getMonth() + 1);
+    params.append("year", now.getFullYear());
+
+    const q = params.toString();
+
+   
+    const res = await axios.get(`http://localhost:8000/api/expense/downloadpdf?${q}`, {
+      responseType: "blob",
+    });
+
+    // Create and trigger download
+    const blob = new Blob([res.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `expenses_${now.getMonth() + 1}_${now.getFullYear()}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (err) {
+    console.error("PDF download error:", err);
+    alert("Failed to download PDF. Check console for details.");
+  }
+};
 
   if (loading) {
     return (
@@ -164,7 +209,6 @@ const UserDashboard = () => {
         Welcome to Your Dashboard
       </Typography>
 
-     
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 2 }}>
@@ -194,7 +238,6 @@ const UserDashboard = () => {
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Charts */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3 }}>
@@ -234,7 +277,6 @@ const UserDashboard = () => {
           </Paper>
         </Grid>
 
-     
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>Smart Saving Suggestions</Typography>
@@ -244,12 +286,13 @@ const UserDashboard = () => {
           </Paper>
         </Grid>
 
-        {/* AI Monthly Summary */}
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>Monthly Summary (AI)</Typography>
             <Typography variant="body2">
-              {monthlySummary?.aiParagraph || "AI summary unavailable this month."}
+              {monthlySummary?.aiParagraph
+                ? monthlySummary.aiParagraph
+                : "No monthly summary available."}
             </Typography>
           </Paper>
         </Grid>
@@ -257,7 +300,6 @@ const UserDashboard = () => {
 
       <Divider sx={{ my: 4 }} />
 
- 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>Filters & Exports</Typography>
         <Grid container spacing={2} alignItems="center">
@@ -281,36 +323,50 @@ const UserDashboard = () => {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField
-              label="Category"
-              value={filters.category}
-              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField
-              label="Payment Mode"
-              value={filters.paymentMode}
-              onChange={(e) => setFilters({ ...filters, paymentMode: e.target.value })}
-              fullWidth
-            />
-          </Grid>
-
-  
+           {/* <FormControl sx={{width: 200}} >
+              <InputLabel>Category</InputLabel>
+              <Select
+                name="category"
+                value={newExpense.category}
+                onChange={handleChange}
+                label="Category"
+                required
+              >
+                {categories.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
+              </Select>
+              
+            </FormControl> */}
+          {/* <FormControl sx={{width: 200}}>
+                       <InputLabel>Payment Mode</InputLabel>
+                       <Select
+                         name="paymentMode"
+                         value={newExpense.paymentMode}
+                         onChange={handleChange}
+                         label="Payment Mode"
+                       >
+                         {paymentModes.map((p) => (
+                           <MenuItem key={p} value={p}>
+                             {p}
+                           </MenuItem>
+                         ))}
+                       </Select>
+                         </FormControl> */}
           <Grid item xs={12} display="flex" justifyContent="flex-start" mt={1}>
-           <Button
+            <Button
               variant="outlined"
-              sx={{ mr: 2 , borderColor: "#4819d7ff", color:"#4819d7ff"}}
+              sx={{ mr: 2, borderColor: "#4819d7ff", color: "#4819d7ff" }}
               startIcon={<DownloadIcon />}
-               onClick={handleExportCSV}
+              onClick={handleExportCSV}
             >
               Download CSV
             </Button>
-             <Button
+            <Button
               variant="contained"
-              sx={{ mr: 2 , backgroundColor:"#2c17b2ff"}}
+              sx={{ mr: 2, backgroundColor: "#2c17b2ff" }}
               startIcon={<FileDownloadIcon />}
               onClick={handleExportPDF}
             >
@@ -320,9 +376,7 @@ const UserDashboard = () => {
         </Grid>
       </Paper>
 
-      {/* Navigation */}
       <Box display="flex" justifyContent="center" gap={3}>
-        
         <Button
           variant="contained"
           sx={{ backgroundColor: "#0a1754ff", color: "#fff", "&:hover": { backgroundColor: "#1565c0" } }}
@@ -336,3 +390,6 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
+
+
+
